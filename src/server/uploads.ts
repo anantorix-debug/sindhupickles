@@ -12,7 +12,7 @@ export type UploadFolder = (typeof UPLOAD_FOLDERS)[number];
 
 // Files live outside `public/` so they are served at runtime in production too.
 // Set UPLOAD_DIR to a folder that survives redeploys (a deploy may replace the app folder, including ./uploads).
-const ROOT = process.env.UPLOAD_DIR ? path.resolve(process.env.UPLOAD_DIR) : path.join(process.cwd(), "uploads");
+export const UPLOADS_ROOT = process.env.UPLOAD_DIR ? path.resolve(process.env.UPLOAD_DIR) : path.join(process.cwd(), "uploads");
 
 const TYPES = {
   jpg: { mime: "image/jpeg", test: (b: Buffer) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
@@ -32,7 +32,7 @@ export async function saveImage(file: File, folder: UploadFolder): Promise<strin
   const ext = (Object.keys(TYPES) as Ext[]).find((e) => TYPES[e].test(bytes));
   if (!ext) throw new ApiError(415, "Only JPG, PNG or WebP images are allowed.", "bad_file_type");
 
-  const dir = path.join(ROOT, folder);
+  const dir = path.join(UPLOADS_ROOT, folder);
   await mkdir(dir, { recursive: true });
   const name = `${randomUUID()}.${ext}`;
   await writeFile(path.join(dir, name), bytes);
@@ -47,7 +47,7 @@ export async function readUpload(segments: string[]): Promise<{ bytes: Buffer; m
   const match = name.match(/^[0-9a-f-]{36}\.(jpg|png|webp)$/);
   if (!match) return null;
   try {
-    return { bytes: await readFile(path.join(ROOT, folder, name)), mime: TYPES[match[1] as Ext].mime };
+    return { bytes: await readFile(path.join(UPLOADS_ROOT, folder, name)), mime: TYPES[match[1] as Ext].mime };
   } catch {
     return null;
   }
