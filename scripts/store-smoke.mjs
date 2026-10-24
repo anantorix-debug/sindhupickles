@@ -49,6 +49,9 @@ const malloryEmail = `zz.mallory.${stamp}@example.com`;
 const counterBefore = (await one("SELECT value FROM counters WHERE name='order_number'")).value;
 const couponBefore = (await one("SELECT used_count FROM coupons WHERE code='SINDHU05'")).used_count;
 const created = { product: null, orders: [], customers: [], enquiry: false };
+// The shop owner may have saved Settings with COD off; the checkout tests need it on, so the row is restored at the end.
+let settingsBefore = null;
+let settingsTouched = false;
 
 try {
   // ---------- catalogue reflects admin changes ----------
@@ -124,12 +127,14 @@ try {
 
   // ---------- checkout ----------
   check("checkout needs sign-in", (await new Client().call("POST", "/api/store/checkout", { items: [{ variantId, quantity: 1 }], addressId, paymentMethod: "cod" })).status === 401);
+  settingsBefore = await one("SELECT setting_value FROM store_settings WHERE setting_key='general'");
+  const curSettings = (await admin.call("GET", "/api/settings")).json.data;
+  settingsTouched = true;
+  await admin.call("PUT", "/api/settings", { ...curSettings, codEnabled: true });
   const opts = (await alice.call("GET", "/api/store/checkout/options")).json.data.map((o) => o.id);
   check("payment options include cod + test (razorpay appears only when keys are configured)", opts.includes("cod") && opts.includes("mock"), opts.join(","));
   // Cash on delivery is an Admin → Settings toggle. Original settings row is restored afterwards.
-  const settingsBefore = await one("SELECT setting_value FROM store_settings WHERE setting_key='general'");
-  const curSettings = (await admin.call("GET", "/api/settings")).json.data;
-  try {
+  {
     const off = await admin.call("PUT", "/api/settings", { ...curSettings, codEnabled: false });
     check("admin can switch COD off", off.status === 200 && off.json.data.codEnabled === false);
     const optsOff = (await alice.call("GET", "/api/store/checkout/options")).json.data.map((o) => o.id);
@@ -139,9 +144,6 @@ try {
     const on = await admin.call("PUT", "/api/settings", { ...curSettings, codEnabled: true });
     check("admin can switch COD on", on.status === 200 && on.json.data.codEnabled === true);
     check("COD offered again when switched on", (await alice.call("GET", "/api/store/checkout/options")).json.data.some((o) => o.id === "cod"));
-  } finally {
-    if (settingsBefore) await db.query("UPDATE store_settings SET setting_value=? WHERE setting_key='general'", [JSON.stringify(settingsBefore.setting_value)]);
-    else await db.query("DELETE FROM store_settings WHERE setting_key='general'");
   }
   check("can't ship to someone else's address",(await mallory.call("POST", "/api/store/checkout", { items: [{ variantId, quantity: 1 }], addressId, paymentMethod: "cod" })).status === 422);
   const oversell = await alice.call("POST", "/api/store/checkout", { items: [{ variantId, quantity: 6 }], addressId, paymentMethod: "cod" });
@@ -235,6 +237,10 @@ try {
   }
 } finally {
   // ---------- cleanup: only rows this script created ----------
+  if (settingsTouched) {
+    if (settingsBefore) await db.query("UPDATE store_settings SET setting_value=? WHERE setting_key='general'", [JSON.stringify(settingsBefore.setting_value)]);
+    else await db.query("DELETE FROM store_settings WHERE setting_key='general'");
+  }
   for (const id of created.orders.filter(Boolean)) {
     await db.query("DELETE FROM inventory_movements WHERE order_id = ?", [id]);
     await db.query("DELETE FROM order_events WHERE order_id = ?", [id]);
