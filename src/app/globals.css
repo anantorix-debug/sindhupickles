@@ -107,9 +107,10 @@ body {
   from { transform: translateY(14px); }
   to { transform: none; }
 }
+/* Movement only, never transparency: text stays fully readable (and passes contrast checks) at every moment. */
 @keyframes sp-reveal {
-  from { opacity: 0; transform: translateY(28px) scale(0.985); }
-  to { opacity: 1; transform: none; }
+  from { transform: translateY(36px) scale(0.97); }
+  to { transform: none; }
 }
 @keyframes sp-float {
   0%, 100% { transform: translateY(0) rotate(0deg); }
