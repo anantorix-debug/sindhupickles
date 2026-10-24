@@ -96,11 +96,16 @@ export async function requestPasswordReset(email: string): Promise<void> {
       new Date(Date.now() + RESET_TTL_MS),
     ]);
   });
-  await mailer.send({
-    to: email,
-    subject: "Reset your Sindhu's Pickles password",
-    text: `Hi ${c.name},\n\nUse this link to set a new password (valid for 1 hour):\n${siteUrl()}/reset-password?token=${token}\n\nIf you didn't ask for this, you can ignore this email.`,
-  });
+  try {
+    await mailer.send({
+      to: email,
+      subject: "Reset your Sindhu's Pickles password",
+      text: `Hi ${c.name},\n\nUse this link to set a new password (valid for 1 hour):\n${siteUrl()}/reset-password?token=${token}\n\nIf you didn't ask for this, you can ignore this email.`,
+    });
+  } catch (err) {
+    // Same response whether or not the account exists: a mail outage must not reveal which emails are registered.
+    console.error("[auth] password-reset email failed", err);
+  }
 }
 
 export async function resetPassword(input: ResetPasswordInput): Promise<void> {

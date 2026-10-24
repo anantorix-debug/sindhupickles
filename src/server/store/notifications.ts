@@ -59,5 +59,7 @@ export async function sendOrderConfirmation(orderId: string): Promise<void> {
     });
   } catch (err) {
     console.error("[notifications] order email failed", orderId, err);
+    // The order timeline must not claim the emails went out when they didn't (e.g. SMTP not configured).
+    await execute("UPDATE order_events SET message = ? WHERE order_id = ? AND type = 'EMAIL'", ["Confirmation emails could not be sent (check the SMTP settings).", orderId]).catch(() => undefined);
   }
 }
