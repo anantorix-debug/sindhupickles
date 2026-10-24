@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Switch } from "@/components/ui/switch";
 import { FormField, fieldA11y } from "@/components/ui/form-field";
 import { FormError, FormSuccess } from "@/components/ui/form-feedback";
@@ -32,13 +32,13 @@ export function ChangePasswordForm() {
       <h2 className="mb-5 font-display text-xl font-bold">Password</h2>
       <form onSubmit={handleSubmit((v) => mutation.mutate(v))} noValidate className="grid max-w-xl gap-5">
         <FormField label="Current password" htmlFor="currentPassword" required error={errors.currentPassword?.message}>
-          <Input {...fieldA11y("currentPassword", errors.currentPassword?.message)} type="password" autoComplete="current-password" {...register("currentPassword")} />
+          <PasswordInput {...fieldA11y("currentPassword", errors.currentPassword?.message)} autoComplete="current-password" {...register("currentPassword")} />
         </FormField>
         <FormField label="New password" htmlFor="newPassword" required error={errors.newPassword?.message} hint="8+ characters, letters and numbers.">
-          <Input {...fieldA11y("newPassword", errors.newPassword?.message, true)} type="password" autoComplete="new-password" {...register("newPassword")} />
+          <PasswordInput {...fieldA11y("newPassword", errors.newPassword?.message, true)} autoComplete="new-password" {...register("newPassword")} />
         </FormField>
         <FormField label="Confirm new password" htmlFor="confirmPassword" required error={errors.confirmPassword?.message}>
-          <Input {...fieldA11y("confirmPassword", errors.confirmPassword?.message)} type="password" autoComplete="new-password" {...register("confirmPassword")} />
+          <PasswordInput {...fieldA11y("confirmPassword", errors.confirmPassword?.message)} autoComplete="new-password" {...register("confirmPassword")} />
         </FormField>
         {mutation.isSuccess && <FormSuccess>Password updated.</FormSuccess>}
         {mutation.isError && !(mutation.error instanceof ApiRequestError && mutation.error.fields) && <FormError>{mutation.error.message}</FormError>}

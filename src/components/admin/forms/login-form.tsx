@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { FormField, fieldA11y } from "@/components/admin/forms/form-field";
 import { FormError } from "@/components/admin/forms/form-feedback";
 import { signIn } from "@/services/auth";
@@ -39,7 +40,7 @@ export function LoginForm({ next }: { next: string }) {
         <Input {...fieldA11y("email", errors.email?.message)} type="email" autoComplete="username" placeholder="admin@sindhuspickles.com" {...register("email")} />
       </FormField>
       <FormField label="Password" htmlFor="password" required error={errors.password?.message}>
-        <Input {...fieldA11y("password", errors.password?.message)} type="password" autoComplete="current-password" {...register("password")} />
+        <PasswordInput {...fieldA11y("password", errors.password?.message)} autoComplete="current-password" {...register("password")} />
       </FormField>
       {mutation.isError && <FormError>{mutation.error.message}</FormError>}
       <Button type="submit" size="lg" className="w-full" loading={mutation.isPending || mutation.isSuccess}>

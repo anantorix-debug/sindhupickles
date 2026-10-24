@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { refreshMe } from "@/components/store/layout/me-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { FormField, fieldA11y } from "@/components/ui/form-field";
 import { FormError, FormSuccess } from "@/components/ui/form-feedback";
 import {
@@ -52,7 +53,7 @@ export function LoginForm({ next }: { next: string }) {
         <Input {...fieldA11y("email", errors.email?.message)} type="email" autoComplete="email" inputMode="email" {...register("email")} />
       </FormField>
       <FormField label="Password" htmlFor="password" required error={errors.password?.message}>
-        <Input {...fieldA11y("password", errors.password?.message)} type="password" autoComplete="current-password" {...register("password")} />
+        <PasswordInput {...fieldA11y("password", errors.password?.message)} autoComplete="current-password" {...register("password")} />
       </FormField>
       <div className="text-right text-sm">
         <Link href="/forgot-password" className="text-accent hover:underline">Forgot password?</Link>
@@ -86,10 +87,10 @@ export function RegisterForm({ next }: { next: string }) {
       </FormField>
       <div className="grid gap-5 sm:grid-cols-2">
         <FormField label="Password" htmlFor="password" required error={errors.password?.message} hint="8+ characters, letters and numbers.">
-          <Input {...fieldA11y("password", errors.password?.message, true)} type="password" autoComplete="new-password" {...register("password")} />
+          <PasswordInput {...fieldA11y("password", errors.password?.message, true)} autoComplete="new-password" {...register("password")} />
         </FormField>
         <FormField label="Confirm password" htmlFor="confirmPassword" required error={errors.confirmPassword?.message}>
-          <Input {...fieldA11y("confirmPassword", errors.confirmPassword?.message)} type="password" autoComplete="new-password" {...register("confirmPassword")} />
+          <PasswordInput {...fieldA11y("confirmPassword", errors.confirmPassword?.message)} autoComplete="new-password" {...register("confirmPassword")} />
         </FormField>
       </div>
       {mutation.isError && !apiError?.fields && <FormError>{(mutation.error as Error).message}</FormError>}
@@ -150,10 +151,10 @@ export function ResetPasswordForm({ token }: { token: string }) {
       <input type="hidden" {...register("token")} />
       {errors.token && <FormError>{errors.token.message}</FormError>}
       <FormField label="New password" htmlFor="password" required error={errors.password?.message} hint="8+ characters, letters and numbers.">
-        <Input {...fieldA11y("password", errors.password?.message, true)} type="password" autoComplete="new-password" {...register("password")} />
+        <PasswordInput {...fieldA11y("password", errors.password?.message, true)} autoComplete="new-password" {...register("password")} />
       </FormField>
       <FormField label="Confirm new password" htmlFor="confirmPassword" required error={errors.confirmPassword?.message}>
-        <Input {...fieldA11y("confirmPassword", errors.confirmPassword?.message)} type="password" autoComplete="new-password" {...register("confirmPassword")} />
+        <PasswordInput {...fieldA11y("confirmPassword", errors.confirmPassword?.message)} autoComplete="new-password" {...register("confirmPassword")} />
       </FormField>
       {mutation.isError && <FormError>{mutation.error.message}</FormError>}
       <Button type="submit" size="lg" className="w-full" loading={mutation.isPending}>Update password</Button>
