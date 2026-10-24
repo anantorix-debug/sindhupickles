@@ -60,7 +60,8 @@ export async function placeOrder(customerId: string, input: CheckoutInput): Prom
       if (res.affectedRows === 0) throw new ApiError(422, "That coupon has reached its usage limit.", "bad_coupon", { couponCode: "Coupon unavailable" });
     }
 
-    // 4. Order number from the shared counter.
+    // 4. Order number from the shared counter. A brand-new database has no counter yet, so create it (never reset it).
+    await conn.query("INSERT IGNORE INTO counters (name, value) VALUES ('order_number', 1000)");
     await conn.query("UPDATE counters SET value = LAST_INSERT_ID(value + 1) WHERE name = 'order_number'");
     const [seq] = await q("SELECT LAST_INSERT_ID() AS n");
     const orderNumber = `${ORDER_PREFIX}-${seq.n}`;

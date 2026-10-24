@@ -106,17 +106,29 @@ export async function evaluateCoupon(
   if (!code) return { code: null, discountPaise: 0, error: null };
   const fail = (error: string): CouponResult => ({ code: null, discountPaise: 0, error });
 
-  const [c] = (await q(
-    `SELECT code, type, value, min_subtotal_paise, max_discount_paise, active, expires_at, usage_limit, used_count
-     FROM coupons WHERE code = ?`,
-    [code],
-  )) as (Row & CouponRow)[];
+  const { welcomeCoupon, welcomeCouponPct } = await getSettings();
+  const load = async () =>
+    ((await q(
+      `SELECT code, type, value, min_subtotal_paise, max_discount_paise, active, expires_at, usage_limit, used_count
+       FROM coupons WHERE code = ?`,
+      [code],
+    )) as (Row & CouponRow)[])[0];
+
+  let c = await load();
+  // The welcome offer shown on the site is defined in Admin → Settings. A fresh database has no coupon rows, so the
+  // row is created the first time that code is used (never replaced or edited once it exists).
+  if (!c && welcomeCoupon && code.trim().toUpperCase() === welcomeCoupon.toUpperCase() && welcomeCouponPct > 0) {
+    await q(
+      "INSERT IGNORE INTO coupons (code, type, value, min_subtotal_paise, max_discount_paise, active, description) VALUES (?, 'PERCENT', ?, 0, 20000, 1, 'First-order welcome coupon')",
+      [welcomeCoupon.toUpperCase(), welcomeCouponPct],
+    );
+    c = await load();
+  }
   if (!c || !c.active) return fail("That coupon code isn't valid.");
   if (c.expires_at && new Date(c.expires_at).getTime() < Date.now()) return fail("That coupon has expired.");
   if (c.usage_limit !== null && c.used_count >= c.usage_limit) return fail("That coupon has reached its usage limit.");
   if (subtotalPaise < c.min_subtotal_paise) return fail(`Spend ₹${toRupees(c.min_subtotal_paise)} or more to use this coupon.`);
 
-  const { welcomeCoupon } = await getSettings();
   if (welcomeCoupon && c.code === welcomeCoupon.toUpperCase()) {
     if (!customerId) return fail("Sign in to use this first-order coupon.");
     const [prior] = await q(

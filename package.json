@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/gen-migrations.mjs && next dev",
     "build": "node scripts/build.mjs",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrate": "node scripts/migrate.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

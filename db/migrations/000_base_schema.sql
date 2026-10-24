@@ -1,7 +1,7 @@
--- Sindhu's Pickles: full database structure (30 tables) plus the few starter rows the shop needs.
--- Import this ONCE into an empty MySQL/MariaDB database (hPanel -> Databases -> phpMyAdmin -> Import).
--- Safe to run again: tables use IF NOT EXISTS and starter rows use INSERT IGNORE.
--- It contains no customers, orders, products or passwords. db/migrations/*.sql are already included here.
+-- 000: base schema (all tables). Every statement is CREATE TABLE IF NOT EXISTS, so on a database that
+-- already has these tables it changes nothing and existing data is never touched.
+-- Run automatically by `npm run build` / app start (see scripts/migrate-runner.mjs). Do not edit once released:
+-- add a NEW numbered file instead.
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -554,19 +554,3 @@ CREATE TABLE IF NOT EXISTS `wp_import_map` (
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
-
--- ---------------------------------------------------------------- starter rows
--- Order numbers start at ANX-1001.
-INSERT IGNORE INTO counters (name, value) VALUES ('order_number', 1000);
-
--- The four main categories (the old WordPress products map onto these).
-INSERT IGNORE INTO categories (name, slug, position, active) VALUES
-  ('Chicken Pickles', 'chicken-pickles', 1, 1),
-  ('Mutton Pickles', 'mutton-pickles', 2, 1),
-  ('Fish Pickles', 'fish-pickles', 3, 1),
-  ('Prawn Pickles', 'prawn-pickles', 4, 1);
-
--- First-order welcome coupon (edit or switch off in Admin -> Settings).
-INSERT IGNORE INTO coupons (code, type, value, min_subtotal_paise, max_discount_paise, active, description)
-VALUES ('SINDHU05', 'PERCENT', 5, 0, 20000, 1, 'Flat 5% off your first order');

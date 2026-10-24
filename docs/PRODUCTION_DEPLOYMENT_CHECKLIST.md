@@ -14,7 +14,7 @@ Nothing here has been done on a live server. Each step needs the owner's go-ahea
 
 - [ ] Node 20+ host (or Node-capable platform), MySQL 8 with automated daily backups.
 - [ ] Create a dedicated MySQL user (not `root`) limited to the `sindhu` database; set a strong password.
-- [ ] Import `db/schema.sql` once (hPanel → Databases → phpMyAdmin → Import). It creates all 30 tables plus the starter rows (order counter, 4 categories, welcome coupon). `scripts/migrate.mjs` is NOT enough on its own: it only adds tables on top of the base schema.
+- [ ] Nothing to import by hand: `npm run build` creates every missing table (and again at app start, as a safety net). Already-existing tables and data are never touched. See "Database migrations" below.
 - [ ] Take a database backup **before** the first import and before every deploy.
 - [ ] Uploaded product photos live in `uploads/` (git-ignored). Put it on a persistent volume and include it in backups.
 - [ ] Static brand images live in `public/assets/images` and ship with the build.
@@ -58,7 +58,7 @@ Copy `.env.example` and fill in. Required:
 
 ## 7. Admin
 
-- [ ] Create the production admin: run `NEW_PASSWORD=... node scripts/make-admin-sql.mjs you@example.com "Your Name"` on your PC, then paste the one SQL statement it prints into phpMyAdmin → SQL on the live database (it prints only a password hash).
+- [ ] First admin: set `INITIAL_ADMIN_EMAIL` and `INITIAL_ADMIN_PASSWORD` (and optionally `INITIAL_ADMIN_NAME`) in Hostinger before the first deploy. It is created once, only if no user exists. Remove those two variables afterwards. (Alternative: `scripts/make-admin-sql.mjs` prints SQL to run by hand in phpMyAdmin; running it again resets that password.)
 - [ ] Sign in at `/admin/login`, change settings (business name, phone, email, WhatsApp, social links, shipping, and the Cash on delivery switch). Orders ship with ST Courier: enter the AWB number on each order and customers get a link to stcourier.com/track/shipment.
 - [ ] Remove or disable any leftover test admins.
 
@@ -87,3 +87,11 @@ Copy `.env.example` and fill in. Required:
 - The build does not need the database: public pages and the sitemap are rendered on request.
 - Uploaded product photos are written to `./uploads` by default. If a redeploy replaces the app folder, those files can be lost. Set `UPLOAD_DIR` to a folder outside the app (for example `/home/<user>/uploads`) before you start uploading.
 - Environment variables entered in hPanel are read at build time too, so `NEXT_PUBLIC_*` values must be present before you deploy.
+
+## Database migrations (automatic, safe to repeat)
+
+- `npm run build` (and the app at start-up) applies the files in `db/migrations/` in order. The database remembers which ones ran in the `schema_migrations` table, so every deploy skips what is already done. If the build machine cannot reach the database, the build still succeeds and the app applies them when it starts.
+- **Only additive.** The runner refuses a migration that drops, truncates, deletes, updates, renames, replaces or alters/removes an existing column, or uses `ON DUPLICATE KEY UPDATE`. Allowed: `CREATE TABLE IF NOT EXISTS`, `ALTER TABLE ... ADD COLUMN`, `INSERT IGNORE`. A deliberate exception needs `.allow-data-change.` in the file name.
+- **To change the database later:** add a NEW file, for example `db/migrations/001_add_wishlist.sql`. Never edit a file that has already been released (the runner warns if one was edited after it was applied and does not re-run it). `ALTER TABLE ... ADD COLUMN` is not repeatable by itself, which is fine: each file runs only once.
+- **No sample data is seeded.** The only seed is the one-time first admin (above). The order-number counter and the welcome coupon from Admin → Settings are created by the app the first time they are needed.
+- Several servers or deploys starting together take turns (database lock). Tests: `node scripts/migrate-smoke.mjs` (rules), `node scripts/fresh-deploy-smoke.mjs` (first deploy + redeploys end to end). `npm run migrate` runs the same migrations by hand.
