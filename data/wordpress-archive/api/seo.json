@@ -1,0 +1,498 @@
+[
+ {
+  "url": "https://sindhuspickles.com/",
+  "code": 200,
+  "title": "Home - sindhuspickles.com",
+  "desc": "Free from palm oil",
+  "canon": "https://sindhuspickles.com/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Non Veg",
+  "ld": [
+   "Article",
+   "ImageObject",
+   "Person",
+   "SearchAction",
+   "WebPage",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/cart/",
+  "code": 200,
+  "title": "Cart - sindhuspickles.com",
+  "desc": "Update",
+  "canon": "",
+  "robots": "noindex, follow",
+  "h1": "Cart",
+  "ld": [
+   "Article",
+   "ImageObject",
+   "Person",
+   "WebPage",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/category/uncategorized/",
+  "code": 200,
+  "title": "Uncategorized - sindhuspickles.com",
+  "desc": "",
+  "canon": "https://sindhuspickles.com/category/uncategorized/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Category: Uncategorized",
+  "ld": [
+   "CollectionPage",
+   "FoodEstablishment",
+   "ImageObject",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/checkout/",
+  "code": 200,
+  "title": "Cart - sindhuspickles.com",
+  "desc": "Update",
+  "canon": "",
+  "robots": "noindex, follow",
+  "h1": "Cart",
+  "ld": [
+   "Article",
+   "ImageObject",
+   "Person",
+   "WebPage",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/hello-world/",
+  "code": 200,
+  "title": "Hello world! - sindhuspickles.com",
+  "desc": "Welcome to WordPress. This is your first post. Edit or delete it, then start writing!",
+  "canon": "https://sindhuspickles.com/hello-world/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Hello world!",
+  "ld": [
+   "BlogPosting",
+   "ImageObject",
+   "Person",
+   "WebPage",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/my-account/",
+  "code": 200,
+  "title": "My account - sindhuspickles.com",
+  "desc": "Dashboard Orders Downloads Addresses Account Details Logout Hello enlightglobe.com@gmail.com (not enlightglobe.com@gmail.com? Log out) From your account",
+  "canon": "",
+  "robots": "noindex, follow",
+  "h1": "My account",
+  "ld": [
+   "Article",
+   "ImageObject",
+   "Person",
+   "WebPage",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/privacy-policy/",
+  "code": 200,
+  "title": "Privacy Policy - sindhuspickles.com",
+  "desc": "Last Updated: November 2025",
+  "canon": "https://sindhuspickles.com/privacy-policy/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "",
+  "ld": [
+   "Article",
+   "ImageObject",
+   "Person",
+   "WebPage",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product-category/100-grams-pickles/",
+  "code": 200,
+  "title": "100 Grams Pickles - sindhuspickles.com",
+  "desc": "",
+  "canon": "https://sindhuspickles.com/product-category/100-grams-pickles/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "100 Grams Pickles",
+  "ld": [
+   "BreadcrumbList",
+   "CollectionPage",
+   "ListItem",
+   "Organization",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product-category/250-grams-pickles/",
+  "code": 200,
+  "title": "250 Grams Pickles - sindhuspickles.com",
+  "desc": "",
+  "canon": "https://sindhuspickles.com/product-category/250-grams-pickles/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "250 Grams Pickles",
+  "ld": [
+   "BreadcrumbList",
+   "CollectionPage",
+   "ListItem",
+   "Organization",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product-category/pickles/",
+  "code": 200,
+  "title": "Pickles - sindhuspickles.com",
+  "desc": "",
+  "canon": "https://sindhuspickles.com/product-category/pickles/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Pickles",
+  "ld": [
+   "BreadcrumbList",
+   "CollectionPage",
+   "ListItem",
+   "Organization",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/boneless-chicken-pickle-100g/",
+  "code": 200,
+  "title": "Buy Boneless Chicken Pickle Online 100g | Sindhu&#039;s Pickles",
+  "desc": "Tender boneless chicken slow-cooked in gingelly oil with traditional South Indian spices. No preservatives. Made fresh in Salem.",
+  "canon": "https://sindhuspickles.com/product/boneless-chicken-pickle-100g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Boneless Chicken Pickle – 100g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/boneless-chicken-pickle-250g/",
+  "code": 200,
+  "title": "Buy Boneless Chicken Pickle Online 250g | Homemade | Sindhu&#039;s",
+  "desc": "Tender boneless chicken slow-cooked in gingelly oil with traditional South Indian spices. No preservatives. Made fresh in Salem.",
+  "canon": "https://sindhuspickles.com/product/boneless-chicken-pickle-250g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Boneless Chicken Pickle – 250g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/chenna-kunni-thokku-100g/",
+  "code": 200,
+  "title": "Chenna Kunni Thokku | Dried Shrimp Pickle Online 100g | Sindhu&#039;s",
+  "desc": "Traditional Chenna Kunni Thokku made with sun-dried shrimp in gingelly oil. An authentic South Indian kitchen staple.",
+  "canon": "https://sindhuspickles.com/product/chenna-kunni-thokku-100g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Chenna Kunni Thokku – 100g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/chenna-kunni-thokku-250g/",
+  "code": 200,
+  "title": "Chenna Kunni Thokku | Dried Shrimp Pickle Online 250g | Sindhu&#039;s",
+  "desc": "Traditional Chenna Kunni Thokku made with sun-dried shrimp in gingelly oil. An authentic South Indian kitchen staple.",
+  "canon": "https://sindhuspickles.com/product/chenna-kunni-thokku-250g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Chenna Kunni Thokku – 250g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/fish-pickle-online-100g/",
+  "code": 200,
+  "title": "Buy Homemade Fish Pickle Online 100g | South Indian Style | Sindhu&#039;s",
+  "desc": "Authentic homemade fish pickle in traditional South Indian style. Cooked in gingelly oil with handground spices.",
+  "canon": "https://sindhuspickles.com/product/fish-pickle-online-100g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Fish Pickle – 100g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/fish-pickle-online-250g/",
+  "code": 200,
+  "title": "Buy Homemade Fish Pickle Online 250g | South Indian Style | Sindhu&#039;s",
+  "desc": "Authentic homemade fish pickle in traditional South Indian style. Cooked in gingelly oil with handground spices.",
+  "canon": "https://sindhuspickles.com/product/fish-pickle-online-250g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Fish Pickle – 250g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/mutton-pickle-online-100g/",
+  "code": 200,
+  "title": "Buy Homemade Mutton Pickle Online 100g – South Indian | Sindhu&#039;s",
+  "desc": "Rich, slow-cooked mutton pickle in gingelly oil with handground South Indian spices. Halal. Ships across India.",
+  "canon": "https://sindhuspickles.com/product/mutton-pickle-online-100g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Mutton Pickle – 100g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/mutton-pickle-online-250g/",
+  "code": 200,
+  "title": "Buy Homemade Mutton Pickle Online 250g – South Indian | Sindhu&#039;s",
+  "desc": "Rich, slow-cooked mutton pickle in gingelly oil with handground South Indian spices. Halal. Ships across India.",
+  "canon": "https://sindhuspickles.com/product/mutton-pickle-online-250g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Mutton Pickle – 250g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/nethili-dryfish-pickle-online-100g/",
+  "code": 200,
+  "title": "Nethili Dryfish Pickle Online 100g | Anchovy Pickle | Sindhu&#039;s",
+  "desc": "Traditional Nethili (anchovies) dryfish pickle made with sun-dried nethili, gingelly oil and South Indian spices.",
+  "canon": "https://sindhuspickles.com/product/nethili-dryfish-pickle-online-100g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Nethili Dryfish Pickle – 100g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/nethili-dryfish-pickle-online-250g/",
+  "code": 200,
+  "title": "Nethili Dryfish Pickle Online 250g | Anchovy Pickle | Sindhu&#039;s",
+  "desc": "Traditional Nethili (anchovies) dryfish pickle made with sun-dried nethili, gingelly oil and South Indian spices.",
+  "canon": "https://sindhuspickles.com/product/nethili-dryfish-pickle-online-250g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Nethili Dryfish Pickle – 250g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/pal-sura-dryfish-pickle-online-100g/",
+  "code": 200,
+  "title": "Pal Sura Dryfish Pickle Online 100g | South Indian | Sindhu&#039;s",
+  "desc": "Authentic Pal Sura (shark) dryfish pickle — a rare South Indian delicacy made in traditional gingelly oil.",
+  "canon": "https://sindhuspickles.com/product/pal-sura-dryfish-pickle-online-100g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Pal Sura Dryfish Pickle – 100g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/pal-sura-dryfish-pickle-online-250g/",
+  "code": 200,
+  "title": "Pal Sura Dryfish Pickle Online 250g | South Indian | Sindhu&#039;s",
+  "desc": "Authentic Pal Sura (shark) dryfish pickle — a rare South Indian delicacy made in traditional gingelly oil.",
+  "canon": "https://sindhuspickles.com/product/pal-sura-dryfish-pickle-online-250g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Pal Sura Dryfish Pickle – 250g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/prawn-pickle-online-100g/",
+  "code": 200,
+  "title": "Buy Homemade Prawn Pickle Online 100g | Seafood Pickle | Sindhu&#039;s",
+  "desc": "Fresh prawns marinated and cooked in gingelly oil with authentic South Indian spices. No artificial preservatives.",
+  "canon": "https://sindhuspickles.com/product/prawn-pickle-online-100g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Prawn Pickle – 100g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/prawn-pickle-online-250g/",
+  "code": 200,
+  "title": "Buy Homemade Prawn Pickle Online 250g | Seafood Pickle | Sindhu&#039;s",
+  "desc": "Fresh prawns marinated and cooked in gingelly oil with authentic South Indian spices. No artificial preservatives.",
+  "canon": "https://sindhuspickles.com/product/prawn-pickle-online-250g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Prawn Pickle – 250g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/tuna-fish-pickle-online-100g/",
+  "code": 200,
+  "title": "Buy Tuna Fish Pickle Online 100g | Homemade South Indian | Sindhu&#039;s",
+  "desc": "Homemade tuna pickle made with fresh tuna, gingelly oil, and traditional South Indian spices. No preservatives.",
+  "canon": "https://sindhuspickles.com/product/tuna-fish-pickle-online-100g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Tuna Fish Pickle – 100g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "PropertyValue",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/product/tuna-fish-pickle-online-250g/",
+  "code": 200,
+  "title": "Buy Tuna Fish Pickle Online 250g | Homemade South Indian | Sindhu&#039;s",
+  "desc": "Homemade tuna pickle made with fresh tuna, gingelly oil, and traditional South Indian spices. No preservatives.",
+  "canon": "https://sindhuspickles.com/product/tuna-fish-pickle-online-250g/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Tuna Fish Pickle – 250g",
+  "ld": [
+   "ImageObject",
+   "ItemPage",
+   "Offer",
+   "Organization",
+   "Product",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/shipping-return-refund-policy/",
+  "code": 200,
+  "title": "Shipping, Return &amp; Refund Policy - sindhuspickles.com",
+  "desc": "Shipping, Return &amp; Refund Policy | Sindhu’s Pickles",
+  "canon": "https://sindhuspickles.com/shipping-return-refund-policy/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "",
+  "ld": [
+   "Article",
+   "ImageObject",
+   "Person",
+   "WebPage",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/shop/",
+  "code": 200,
+  "title": "Shop - sindhuspickles.com",
+  "desc": "Products Archive - sindhuspickles.com",
+  "canon": "https://sindhuspickles.com/shop/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "Shop",
+  "ld": [
+   "BreadcrumbList",
+   "CollectionPage",
+   "FoodEstablishment",
+   "ImageObject",
+   "ListItem",
+   "WebSite"
+  ]
+ },
+ {
+  "url": "https://sindhuspickles.com/terms-and-conditions/",
+  "code": 200,
+  "title": "Terms and Conditions - sindhuspickles.com",
+  "desc": "Last Updated: November 2025",
+  "canon": "https://sindhuspickles.com/terms-and-conditions/",
+  "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "h1": "",
+  "ld": [
+   "Article",
+   "ImageObject",
+   "Person",
+   "WebPage",
+   "WebSite"
+  ]
+ }
+]
