@@ -78,3 +78,12 @@ Copy `.env.example` and fill in. Required:
 
 - [ ] Monitor server logs and `webhook_events`; watch for orders flagged for review.
 - [ ] Keep the archive in `data/wordpress-archive/` (not deployed) as a backup of the old site.
+
+## Hostinger Node.js (Business plan) notes
+
+- Hostinger always builds Next.js in server mode with `output: "standalone"` and starts the bundled server itself. Keep Output directory `.next`, Build command `npm run build`, Node 22.
+- `next.config.ts` must stay a **plain exported object** (Hostinger ignores a function config and loses the redirects and standalone output).
+- The build runs `scripts/build.mjs`, which caps the compiler's thread pools. Shared hosting limits threads per account (Business: about 120 processes/threads while running); an uncapped build aborts with "OS can't spawn worker thread: Resource temporarily unavailable". Extra caps can be set in Hostinger's Environment Variables: `TOKIO_WORKER_THREADS=1`, `RAYON_NUM_THREADS=1` (values set there win over the script's defaults).
+- The build does not need the database: public pages and the sitemap are rendered on request.
+- Uploaded product photos are written to `./uploads` by default. If a redeploy replaces the app folder, those files can be lost. Set `UPLOAD_DIR` to a folder outside the app (for example `/home/<user>/uploads`) before you start uploading.
+- Environment variables entered in hPanel are read at build time too, so `NEXT_PUBLIC_*` values must be present before you deploy.

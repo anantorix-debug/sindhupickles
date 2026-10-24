@@ -11,7 +11,8 @@ export const UPLOAD_FOLDERS = ["products", "blog"] as const;
 export type UploadFolder = (typeof UPLOAD_FOLDERS)[number];
 
 // Files live outside `public/` so they are served at runtime in production too.
-const ROOT = path.join(process.cwd(), "uploads");
+// Set UPLOAD_DIR to a folder that survives redeploys (a deploy may replace the app folder, including ./uploads).
+const ROOT = process.env.UPLOAD_DIR ? path.resolve(process.env.UPLOAD_DIR) : path.join(process.cwd(), "uploads");
 
 const TYPES = {
   jpg: { mime: "image/jpeg", test: (b: Buffer) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
