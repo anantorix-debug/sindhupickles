@@ -6,6 +6,7 @@ import { PageContainer } from "@/components/store/common/section-heading";
 import { Rating } from "@/components/store/common/rating";
 import { ProductGrid } from "@/components/store/home/product-section";
 import { ProductGallery } from "@/components/store/product/product-gallery";
+import { ProductHighlights } from "@/components/store/product/product-highlights";
 import { PurchasePanel } from "@/components/store/product/purchase-panel";
 import { ReviewPrompt } from "@/components/store/product/review-prompt";
 import { formatDate } from "@/lib/format";
@@ -80,7 +81,11 @@ export default async function ProductPage({ params }: Props) {
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
-        <ProductGallery images={product.images} name={product.name} />
+        {/* On wide screens the photos stay in view while the description scrolls, so the left column never sits empty. */}
+        <div className="space-y-6 lg:sticky lg:top-28 lg:self-start">
+          <ProductGallery images={product.images} name={product.name} />
+          <ProductHighlights />
+        </div>
 
         <div className="space-y-6">
           <div className="space-y-3">
