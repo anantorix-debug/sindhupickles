@@ -1,7 +1,7 @@
 import { access, constants, mkdir } from "node:fs/promises";
 import { NextResponse } from "next/server";
 import { query } from "@/server/db";
-import { UPLOADS_ROOT } from "@/server/uploads";
+import { UPLOADS_PERSISTENT, UPLOADS_ROOT } from "@/server/uploads";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +20,7 @@ export async function GET() {
     expectedTables: EXPECTED_TABLES,
     uploadsWritable: false,
     // true when uploads are stored outside the app folder (UPLOAD_DIR). On Hostinger every deploy gets a new app folder, so without it photos are lost on the next deploy.
-    uploadDirSet: Boolean(process.env.UPLOAD_DIR),
+    uploadDirSet: UPLOADS_PERSISTENT,
     authSecretSet: (process.env.AUTH_SECRET ?? "").length >= 32,
     siteUrlSet: Boolean(process.env.NEXT_PUBLIC_SITE_URL),
   };

@@ -1,9 +1,10 @@
 // Uploads product photos through the ADMIN API (the same endpoints the admin screen uses), to any running copy of the shop.
 //
-//   ADMIN_EMAIL=... ADMIN_PASSWORD=... BASE=https://your-site node scripts/upload-product-images.mjs [--dry-run]
+//   ADMIN_EMAIL=... ADMIN_PASSWORD=... BASE=https://your-site node scripts/upload-product-images.mjs [--dry-run] [--stock 50]
 //
 //  * 250g jars: the front photo (+ the back label as a 2nd photo) from PHOTOS_DIR (default "D:/pickles image").
 //  * 100g jars: the photo the OLD website used (data/wordpress-archive/images) - a stand-in until the original files exist.
+// With --stock N, every pack of these products that is at 0 in stock is set to N (a pack that already has stock is left alone).
 // Safe to repeat: a product that already has any photo is skipped, so nothing is duplicated or replaced.
 // Photos are resized to 1200px WebP first (well under the 3 MB upload limit). The password is only sent to BASE's sign-in.
 import { readFileSync, existsSync } from "node:fs";
@@ -14,6 +15,12 @@ const BASE = (process.env.BASE ?? "http://localhost:3001").replace(/\/$/, "");
 const EMAIL = process.env.ADMIN_EMAIL;
 const PASSWORD = process.env.ADMIN_PASSWORD;
 const DRY = process.argv.includes("--dry-run");
+const stockFlag = process.argv.indexOf("--stock");
+const STOCK = stockFlag > -1 ? Number(process.argv[stockFlag + 1]) : null;
+if (STOCK !== null && (!Number.isInteger(STOCK) || STOCK < 0 || STOCK > 100000)) {
+  console.error("--stock needs a whole number, for example --stock 50");
+  process.exit(1);
+}
 const PHOTOS_DIR = process.env.PHOTOS_DIR ?? "D:/pickles image";
 const OLD_SITE = path.join(process.env.WP_ARCHIVE ?? "data/wordpress-archive", "images");
 
@@ -96,4 +103,22 @@ for (const [slug, photos] of Object.entries(PLAN)) {
   }
 }
 console.log(`\nproducts uploaded: ${uploaded}, already had photos: ${skipped}, not in this shop: ${absent}, failed: ${failed}`);
+
+// ---- optional: opening stock (only for packs that are at 0)
+if (STOCK !== null) {
+  let set = 0, kept = 0, stockFailed = 0;
+  for (const slug of Object.keys(PLAN)) {
+    const product = bySlug.get(slug);
+    if (!product) continue;
+    for (const v of product.variants ?? []) {
+      if (v.onHand !== 0) { kept++; continue; }
+      if (DRY) { console.log(`  ${slug.padEnd(40)} ${v.label}: would set stock to ${STOCK}`); continue; }
+      const r = await call("PATCH", `/api/inventory/${v.id}`, { onHand: STOCK, reason: "Opening stock" });
+      if (r.status === 200) set++;
+      else { stockFailed++; console.log(`  ${slug.padEnd(40)} ${v.label}: stock FAILED (HTTP ${r.status}): ${r.json?.error?.message}`); }
+    }
+  }
+  console.log(`stock: set to ${STOCK} on ${set} pack(s), left alone (already had stock): ${kept}, failed: ${stockFailed}`);
+  failed += stockFailed;
+}
 process.exit(failed ? 1 : 0);

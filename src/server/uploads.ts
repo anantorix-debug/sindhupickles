@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 import { ApiError } from "@/server/http";
+import { resolveUploadsRoot } from "@/server/uploads-root";
 
 /** Same limit as Kuttima's Multer upload config. */
 export const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
@@ -11,8 +12,11 @@ export const UPLOAD_FOLDERS = ["products", "blog", "categories"] as const;
 export type UploadFolder = (typeof UPLOAD_FOLDERS)[number];
 
 // Files live outside `public/` so they are served at runtime in production too.
-// Set UPLOAD_DIR to a folder that survives redeploys (a deploy may replace the app folder, including ./uploads).
-export const UPLOADS_ROOT = process.env.UPLOAD_DIR ? path.resolve(process.env.UPLOAD_DIR) : path.join(process.cwd(), "uploads");
+// One fixed folder that every deploy keeps (UPLOAD_DIR, or beside Hostinger's per-deploy folders; see uploads-root.ts).
+const resolved = resolveUploadsRoot();
+export const UPLOADS_ROOT = resolved.root;
+/** True when photos are kept outside the app folder, so a redeploy cannot delete them. */
+export const UPLOADS_PERSISTENT = resolved.persistent;
 
 const TYPES = {
   jpg: { mime: "image/jpeg", test: (b: Buffer) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
