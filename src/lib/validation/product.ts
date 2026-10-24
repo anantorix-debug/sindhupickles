@@ -12,6 +12,14 @@ const optionalPrice = z.preprocess(
 export const productSchema = z
   .object({
     name: z.string().trim().min(3, "Name must be at least 3 characters").max(200, "Name is too long"),
+    /** The page address (/product/<slug>). Empty = generated from the name. Type the old address to keep an old link. */
+    slug: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .max(190, "Too long")
+      .regex(/^[a-z0-9]*(-[a-z0-9]+)*$/, "Use lowercase letters, numbers and dashes (no spaces)")
+      .optional(),
     sku: z
       .string()
       .trim()

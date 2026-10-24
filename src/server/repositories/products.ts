@@ -130,9 +130,13 @@ export async function createProduct(input: ProductInput): Promise<Product> {
     await assertSkuFree(conn, input.sku);
     await assertCategories(conn, input.categoryId, input.subcategoryId);
 
-    let slug = slugify(input.name) || "product";
+    // A typed address is used exactly as written (and refused if another product has it); otherwise it comes from the name.
+    let slug = input.slug || slugify(input.name) || "product";
     const [taken] = await conn.query<Row[]>("SELECT id FROM products WHERE slug = ?", [slug]);
-    if (taken.length) slug = `${slug}-${Date.now().toString(36)}`;
+    if (taken.length) {
+      if (input.slug) throw new ApiError(409, "That page address is already used by another product", "duplicate_slug", { slug: "That page address is already used by another product" });
+      slug = `${slug}-${Date.now().toString(36)}`;
+    }
 
     const [res] = await conn.query<import("mysql2").ResultSetHeader>(
       `INSERT INTO products (name, slug, description, short_description, sku, category_id, subcategory_id, price_paise, sale_price_paise,
@@ -162,17 +166,24 @@ export async function createProduct(input: ProductInput): Promise<Product> {
 
 export async function updateProduct(id: string, input: ProductInput): Promise<Product> {
   await transaction(async (conn) => {
-    const [existing] = await conn.query<Row[]>("SELECT id FROM products WHERE id = ? FOR UPDATE", [id]);
+    const [existing] = await conn.query<Row[]>("SELECT id, slug FROM products WHERE id = ? FOR UPDATE", [id]);
     if (!existing[0]) throw notFound("Product");
     await assertSkuFree(conn, input.sku, id);
     await assertCategories(conn, input.categoryId, input.subcategoryId);
 
+    // Empty keeps the current address. A typed one must not belong to another product.
+    const slug = input.slug || existing[0].slug;
+    if (slug !== existing[0].slug) {
+      const [taken] = await conn.query<Row[]>("SELECT id FROM products WHERE slug = ? AND id <> ?", [slug, id]);
+      if (taken.length) throw new ApiError(409, "That page address is already used by another product", "duplicate_slug", { slug: "That page address is already used by another product" });
+    }
+
     await conn.query(
-      `UPDATE products SET name = ?, description = ?, short_description = ?, sku = ?, price_paise = ?, sale_price_paise = ?,
+      `UPDATE products SET name = ?, slug = ?, description = ?, short_description = ?, sku = ?, price_paise = ?, sale_price_paise = ?,
               status = ?, featured = ?, spice_level = ?, category_id = ?, subcategory_id = ?, updated_at = NOW(3)
        WHERE id = ?`,
       [
-        input.name, input.description, input.shortDescription || null, input.sku,
+        input.name, slug, input.description, input.shortDescription || null, input.sku,
         toPaise(input.price), input.salePrice === null ? null : toPaise(input.salePrice),
         input.status.toUpperCase(), input.featured ? 1 : 0, input.spiceLevel, input.categoryId, input.subcategoryId,
         id,

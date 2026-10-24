@@ -18,6 +18,7 @@ import type { Category, Product } from "@/types";
 
 const defaults: ProductFormValues = {
   name: "",
+  slug: "",
   sku: "",
   categoryId: 0,
   subcategoryId: null,
@@ -32,6 +33,7 @@ const defaults: ProductFormValues = {
 
 const toFormValues = (p: Product): ProductFormValues => ({
   name: p.name,
+  slug: p.slug,
   sku: p.sku,
   categoryId: Number(p.categoryId),
   subcategoryId: p.subcategoryId === null ? null : Number(p.subcategoryId),
@@ -91,6 +93,15 @@ export function ProductForm({ product, categories }: { product?: Product; catego
         <CardContent className="grid gap-5 sm:grid-cols-2">
           <FormField label="Name" htmlFor="name" required error={errors.name?.message} className="sm:col-span-2">
             <Input {...fieldA11y("name", errors.name?.message)} placeholder="Boneless Chicken Pickle" {...register("name")} />
+          </FormField>
+          <FormField
+            label="Page address (slug)"
+            htmlFor="slug"
+            error={errors.slug?.message}
+            className="sm:col-span-2"
+            hint={editing ? "The product page is /product/<this>. Changing it changes the page link, and the old link stops working." : "The product page will be /product/<this>. Leave empty to make it from the name, or type the old address (for example tuna-fish-pickle-online-100g) to keep an old link."}
+          >
+            <Input {...fieldA11y("slug", errors.slug?.message, true)} placeholder="boneless-chicken-pickle-250g" autoCapitalize="none" spellCheck={false} {...register("slug")} />
           </FormField>
           <FormField label="SKU" htmlFor="sku" required error={errors.sku?.message} hint="Unique stock-keeping code.">
             <Input {...fieldA11y("sku", errors.sku?.message, true)} placeholder="SP-CHK-BL" {...register("sku")} />
