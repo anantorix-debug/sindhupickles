@@ -21,6 +21,8 @@ export async function GET() {
     uploadsWritable: false,
     // true when uploads are stored outside the app folder (UPLOAD_DIR). On Hostinger every deploy gets a new app folder, so without it photos are lost on the next deploy.
     uploadDirSet: UPLOADS_PERSISTENT,
+    // seconds since this copy of the app started (resets on every deploy/restart)
+    uptimeSeconds: Math.round(process.uptime()),
     authSecretSet: (process.env.AUTH_SECRET ?? "").length >= 32,
     siteUrlSet: Boolean(process.env.NEXT_PUBLIC_SITE_URL),
   };

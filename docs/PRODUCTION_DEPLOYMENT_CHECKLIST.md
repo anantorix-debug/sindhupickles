@@ -85,7 +85,7 @@ Copy `.env.example` and fill in. Required:
 - `next.config.ts` must stay a **plain exported object** (Hostinger ignores a function config and loses the redirects and standalone output).
 - The build runs `scripts/build.mjs`, which caps the compiler's thread pools. Shared hosting limits threads per account (Business: about 120 processes/threads while running); an uncapped build aborts with "OS can't spawn worker thread: Resource temporarily unavailable". Extra caps can be set in Hostinger's Environment Variables: `TOKIO_WORKER_THREADS=1`, `RAYON_NUM_THREADS=1` (values set there win over the script's defaults).
 - The build does not need the database: public pages and the sitemap are rendered on request.
-- Uploaded product photos are written to `./uploads` by default. If a redeploy replaces the app folder, those files can be lost. Set `UPLOAD_DIR` to a folder outside the app (for example `/home/<user>/uploads`) before you start uploading.
+- Uploaded photos are kept in ONE fixed folder that every deploy keeps: `UPLOAD_DIR` if set, otherwise (on Hostinger Web Apps) `<site>/uploads` beside the per-deploy `hbuilds` folders. `/api/store/health` shows `uploadDirSet: true` when this is in effect. Locally they stay in `./uploads`.
 - Environment variables entered in hPanel are read at build time too, so `NEXT_PUBLIC_*` values must be present before you deploy.
 
 ## Database migrations (automatic, safe to repeat)
