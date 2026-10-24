@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { PHASE_PRODUCTION_BUILD } from "next/constants";
 import { legacyPrefixRedirects, legacyRedirects, legacySitemapTypes } from "./src/config/legacy-redirects";
 
 const nextConfig: NextConfig = {
@@ -26,4 +27,17 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+/**
+ * Shared hosting (e.g. Hostinger) caps how many threads one account may run, and the compiler normally starts
+ * one per CPU core in every worker ("OS can't spawn worker thread"). So production builds are kept small.
+ * Only the build is limited; `next dev` and `next start` are unaffected.
+ */
+export default function config(phase: string): NextConfig {
+  if (phase !== PHASE_PRODUCTION_BUILD) return nextConfig;
+  process.env.TOKIO_WORKER_THREADS ??= "2";
+  process.env.RAYON_NUM_THREADS ??= "2";
+  return {
+    ...nextConfig,
+    experimental: { cpus: 2, staticGenerationMaxConcurrency: 4, parallelServerCompiles: false, parallelServerBuildTraces: false },
+  };
+}
