@@ -3,7 +3,7 @@ import { createHash, randomBytes } from "node:crypto";
 import type { ChangePasswordInput, ProfileInput, RegisterInput, ResetPasswordInput } from "@/lib/validation/store";
 import type { CustomerPreferences, CustomerProfile } from "@/types/store";
 import { ApiError } from "@/server/http";
-import { execute, iso, query, transaction } from "@/server/db";
+import { execute, iso, parseJson, query, transaction } from "@/server/db";
 import { mailer } from "@/server/store/mailer";
 import { DUMMY_HASH, hashPassword, verifyPassword } from "@/server/store/password";
 
@@ -25,7 +25,7 @@ export async function getProfile(customerId: string): Promise<CustomerProfile | 
     email: r.email,
     phone: r.phone,
     createdAt: iso(r.created_at)!,
-    preferences: { ...DEFAULT_PREFS, ...(r.preferences ?? {}) },
+    preferences: { ...DEFAULT_PREFS, ...parseJson<Partial<typeof DEFAULT_PREFS>>(r.preferences, {}) },
   };
 }
 

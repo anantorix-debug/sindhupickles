@@ -58,3 +58,18 @@ export async function transaction<T>(fn: (conn: PoolConnection) => Promise<T>): 
 }
 
 export const iso = (d: Date | string | null): string | null => (d ? new Date(d).toISOString() : null);
+
+/**
+ * JSON columns come back as parsed objects from MySQL but as plain text from MariaDB (where JSON is just
+ * LONGTEXT). Reading them through this keeps the app working on either server.
+ */
+export function parseJson<T>(value: unknown, fallback: T): T {
+  if (typeof value === "string") {
+    try {
+      return JSON.parse(value) as T;
+    } catch {
+      return fallback;
+    }
+  }
+  return (value as T | null | undefined) ?? fallback;
+}

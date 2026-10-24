@@ -2,7 +2,7 @@ import "server-only";
 import type { BlogPost, BlogPostSummary, BlogStatus } from "@/types";
 import type { BlogPostInput } from "@/lib/validation/content";
 import { ApiError, notFound } from "@/server/http";
-import { execute, iso, query, type Row } from "@/server/db";
+import { execute, iso, parseJson, query, type Row } from "@/server/db";
 import { slugify } from "@/server/slug";
 
 const wordsToMinutes = (text: string) => Math.max(1, Math.ceil(text.trim().split(/\s+/).length / 200));
@@ -25,7 +25,7 @@ const mapPost = (r: Row): BlogPost => ({
   ...mapSummary(r),
   content: r.content,
   excerpt: r.excerpt ?? "",
-  tags: Array.isArray(r.tags) ? r.tags : [],
+  tags: parseJson<string[]>(r.tags, []),
   metaTitle: r.meta_title ?? "",
   metaDescription: r.meta_description ?? "",
   focusKeyword: r.focus_keyword ?? "",

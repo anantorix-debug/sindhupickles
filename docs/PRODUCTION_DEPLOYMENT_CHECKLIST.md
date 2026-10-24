@@ -14,7 +14,7 @@ Nothing here has been done on a live server. Each step needs the owner's go-ahea
 
 - [ ] Node 20+ host (or Node-capable platform), MySQL 8 with automated daily backups.
 - [ ] Create a dedicated MySQL user (not `root`) limited to the `sindhu` database; set a strong password.
-- [ ] Run migrations: `node scripts/migrate.mjs` (001–003 are additive only).
+- [ ] Import `db/schema.sql` once (hPanel → Databases → phpMyAdmin → Import). It creates all 30 tables plus the starter rows (order counter, 4 categories, welcome coupon). `scripts/migrate.mjs` is NOT enough on its own: it only adds tables on top of the base schema.
 - [ ] Take a database backup **before** the first import and before every deploy.
 - [ ] Uploaded product photos live in `uploads/` (git-ignored). Put it on a persistent volume and include it in backups.
 - [ ] Static brand images live in `public/assets/images` and ship with the build.
@@ -58,7 +58,7 @@ Copy `.env.example` and fill in. Required:
 
 ## 7. Admin
 
-- [ ] Create the production admin with `node scripts/set-admin-password.mjs` (it will not overwrite an existing account unless told to).
+- [ ] Create the production admin: run `NEW_PASSWORD=... node scripts/make-admin-sql.mjs you@example.com "Your Name"` on your PC, then paste the one SQL statement it prints into phpMyAdmin → SQL on the live database (it prints only a password hash).
 - [ ] Sign in at `/admin/login`, change settings (business name, phone, email, WhatsApp, social links, shipping, and the Cash on delivery switch). Orders ship with ST Courier: enter the AWB number on each order and customers get a link to stcourier.com/track/shipment.
 - [ ] Remove or disable any leftover test admins.
 

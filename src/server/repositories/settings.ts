@@ -1,6 +1,6 @@
 import "server-only";
 import type { StoreSettings } from "@/types";
-import { execute, query } from "@/server/db";
+import { execute, parseJson, query } from "@/server/db";
 
 const KEY = "general";
 
@@ -28,7 +28,7 @@ const DEFAULTS: StoreSettings = {
 /** Stored as one JSON document in `store_settings`; missing keys fall back to defaults. */
 export async function getSettings(): Promise<StoreSettings> {
   const [row] = await query("SELECT setting_value FROM store_settings WHERE setting_key = ?", [KEY]);
-  return { ...DEFAULTS, ...(row?.setting_value ?? {}) };
+  return { ...DEFAULTS, ...parseJson<Partial<StoreSettings>>(row?.setting_value, {}) };
 }
 
 export async function updateSettings(input: StoreSettings): Promise<StoreSettings> {

@@ -1,5 +1,5 @@
 import "server-only";
-import { execute, query } from "@/server/db";
+import { execute, parseJson, query } from "@/server/db";
 import { getOrder } from "@/server/repositories/orders";
 import { getSettings } from "@/server/repositories/settings";
 import { mailer } from "@/server/store/mailer";
@@ -30,7 +30,7 @@ export async function sendOrderConfirmation(orderId: string): Promise<void> {
 
     const settings = await getSettings();
     const [cust] = await query("SELECT cc.preferences FROM customer_credentials cc WHERE cc.customer_id = ?", [order.customerId]);
-    const wantsUpdates = cust?.preferences?.orderUpdates !== false;
+    const wantsUpdates = parseJson<{ orderUpdates?: boolean }>(cust?.preferences, {}).orderUpdates !== false;
 
     const lines = order.items.map((i) => `  ${i.quantity} × ${i.name} (${i.variantLabel}) — ${formatCurrency(i.lineTotal)}`).join("\n");
     const summary = [
