@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MAX_IMAGE_MB, uploadImage } from "@/services/uploads";
 
 interface ImageUploadProps {
-  folder: "products" | "blog";
+  folder: "products" | "blog" | "categories";
   label?: string;
   onUploaded: (url: string) => void | Promise<void>;
   disabled?: boolean;

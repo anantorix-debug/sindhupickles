@@ -17,6 +17,13 @@ export const categorySchema = z.object({
   description: z.string().trim().max(2000, "Keep it under 2000 characters"),
   parentId: optionalId,
   active: z.boolean(),
+  /** Uploaded picture (or empty to remove it). Left out = keep the current one. */
+  imageUrl: z
+    .string()
+    .trim()
+    .max(500)
+    .refine((v) => v === "" || /^\/uploads\/categories\/[A-Za-z0-9._-]+$/.test(v), "Use the Upload button")
+    .optional(),
 });
 export type CategoryFormValues = z.input<typeof categorySchema>;
 export type CategoryInput = z.output<typeof categorySchema>;

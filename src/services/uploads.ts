@@ -3,7 +3,7 @@ import { ApiRequestError } from "./api-client";
 export const MAX_IMAGE_MB = 3;
 
 /** Uploads one image (JPG/PNG/WebP, max 3 MB) and returns its public URL. */
-export async function uploadImage(file: File, folder: "products" | "blog"): Promise<string> {
+export async function uploadImage(file: File, folder: "products" | "blog" | "categories"): Promise<string> {
   if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
     throw new ApiRequestError(`Image is too large. The limit is ${MAX_IMAGE_MB} MB.`, 413);
   }

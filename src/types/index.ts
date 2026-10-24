@@ -255,6 +255,8 @@ export interface Category {
   description: string;
   active: boolean;
   position: number;
+  /** Picture shown on the storefront category tile (uploaded in Admin → Categories). */
+  imageUrl: string | null;
   productCount: number;
 }
 

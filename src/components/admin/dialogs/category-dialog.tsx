@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import { Input, Select, Textarea } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { FormField, fieldA11y } from "@/components/admin/forms/form-field";
 import { FormError } from "@/components/admin/forms/form-feedback";
+import { ImageUpload } from "@/components/admin/common/image-upload";
 import { categorySchema, type CategoryFormValues, type CategoryInput } from "@/lib/validation/content";
 import { createCategory, updateCategory } from "@/services/categories";
 import { ApiRequestError } from "@/services/api-client";
@@ -55,6 +57,8 @@ function CategoryForm({ category, all, onDone }: { category?: Category; all: Cat
     register,
     handleSubmit,
     setError,
+    setValue,
+    control,
     formState: { errors },
   } = useForm<CategoryFormValues, unknown, CategoryInput>({
     resolver: zodResolver(categorySchema),
@@ -62,6 +66,7 @@ function CategoryForm({ category, all, onDone }: { category?: Category; all: Cat
       name: category?.name ?? "",
       slug: category?.slug ?? "",
       description: category?.description ?? "",
+      imageUrl: category?.imageUrl ?? "",
       parentId: category?.parentId ? Number(category.parentId) : null,
       active: category?.active ?? true,
     },
@@ -81,6 +86,7 @@ function CategoryForm({ category, all, onDone }: { category?: Category; all: Cat
   });
 
   // A category that already has subcategories can't itself become a subcategory.
+  const imageUrl = useWatch({ control, name: "imageUrl" }) ?? "";
   const hasChildren = category ? all.some((c) => c.parentId === category.id) : false;
   const parents = all.filter((c) => c.parentId === null && c.id !== category?.id);
 
@@ -113,6 +119,24 @@ function CategoryForm({ category, all, onDone }: { category?: Category; all: Cat
       <FormField label="Description" htmlFor="description" error={errors.description?.message}>
         <Textarea {...fieldA11y("description", errors.description?.message)} rows={3} {...register("description")} />
       </FormField>
+      <div className="space-y-2">
+        <p className="text-sm font-semibold">Picture <span className="font-normal text-muted">(shown on the home page tile)</span></p>
+        <div className="flex items-center gap-4">
+          <span className="relative size-20 shrink-0 overflow-hidden rounded-full border border-border bg-surface-raised">
+            {imageUrl ? <Image src={imageUrl} alt="" fill sizes="80px" className="object-cover" /> : <span className="flex size-full items-center justify-center text-xs text-muted">No picture</span>}
+          </span>
+          <div className="space-y-2">
+            <ImageUpload folder="categories" label={imageUrl ? "Replace picture" : "Upload picture"} onUploaded={(url) => setValue("imageUrl", url, { shouldDirty: true })} />
+            {imageUrl && (
+              <Button type="button" variant="ghost" size="sm" onClick={() => setValue("imageUrl", "", { shouldDirty: true })}>
+                Remove picture
+              </Button>
+            )}
+          </div>
+        </div>
+        {errors.imageUrl?.message && <p role="alert" className="text-xs text-danger">{errors.imageUrl.message}</p>}
+        <p className="text-xs text-muted">Without a picture the tile shows the first product photo in the category.</p>
+      </div>
       <div className="flex items-center justify-between gap-4">
         <label htmlFor="active" className="text-sm font-semibold">Visible on storefront</label>
         <Switch id="active" {...register("active")} />

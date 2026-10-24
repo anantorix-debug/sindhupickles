@@ -7,7 +7,7 @@ import { ApiError } from "@/server/http";
 /** Same limit as Kuttima's Multer upload config. */
 export const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
 
-export const UPLOAD_FOLDERS = ["products", "blog"] as const;
+export const UPLOAD_FOLDERS = ["products", "blog", "categories"] as const;
 export type UploadFolder = (typeof UPLOAD_FOLDERS)[number];
 
 // Files live outside `public/` so they are served at runtime in production too.

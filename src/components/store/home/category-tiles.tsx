@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { PageContainer } from "@/components/store/common/section-heading";
-import { categoryImage } from "@/config/store-images";
 import type { StoreCategory } from "@/types/store";
 
 export function CategoryTile({ category }: { category: StoreCategory }) {
-  const src = categoryImage(category.slug, category.imageUrl);
+  // The picture set in Admin → Categories, else the first product photo in the category, else the initial letter.
+  const src = category.imageUrl;
   return (
     <Link
       href={`/categories/${category.slug}`}

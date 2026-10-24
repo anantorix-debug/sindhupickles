@@ -19,6 +19,7 @@ const mapCategory = (r: Row): Category => ({
   description: r.description ?? "",
   active: Boolean(r.active),
   position: r.position,
+  imageUrl: r.image_url ?? null,
   productCount: Number(r.product_count),
 });
 
@@ -61,9 +62,9 @@ export async function createCategory(input: CategoryInput): Promise<Category> {
     if (name[0]) throw new ApiError(409, "A category with that name already exists here", "duplicate_name", { name: "Already exists" });
     const [pos] = await conn.query<Row[]>("SELECT COALESCE(MAX(position), -1) + 1 AS next FROM categories WHERE parent_id <=> ?", [input.parentId]);
     const [res] = await conn.query<import("mysql2").ResultSetHeader>(
-      `INSERT INTO categories (parent_id, name, slug, description, position, active, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, NOW(3), NOW(3))`,
-      [input.parentId, input.name, slug, input.description || null, pos[0].next, input.active ? 1 : 0],
+      `INSERT INTO categories (parent_id, name, slug, description, image_url, position, active, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, NOW(3), NOW(3))`,
+      [input.parentId, input.name, slug, input.description || null, input.imageUrl || null, pos[0].next, input.active ? 1 : 0],
     );
     return String(res.insertId);
   });
@@ -72,13 +73,14 @@ export async function createCategory(input: CategoryInput): Promise<Category> {
 
 export async function updateCategory(id: string, input: CategoryInput): Promise<Category> {
   await transaction(async (conn) => {
-    const [existing] = await conn.query<Row[]>("SELECT id, slug FROM categories WHERE id = ? FOR UPDATE", [id]);
+    const [existing] = await conn.query<Row[]>("SELECT id, slug, image_url FROM categories WHERE id = ? FOR UPDATE", [id]);
     if (!existing[0]) throw notFound("Category");
     await assertParent(conn, input.parentId, id);
     const slug = await uniqueSlug(conn, input.slug || existing[0].slug, Boolean(input.slug), id);
     await conn.query(
-      "UPDATE categories SET parent_id = ?, name = ?, slug = ?, description = ?, active = ?, updated_at = NOW(3) WHERE id = ?",
-      [input.parentId, input.name, slug, input.description || null, input.active ? 1 : 0, id],
+      "UPDATE categories SET parent_id = ?, name = ?, slug = ?, description = ?, image_url = ?, active = ?, updated_at = NOW(3) WHERE id = ?",
+      // undefined keeps the current picture; an empty string removes it
+      [input.parentId, input.name, slug, input.description || null, input.imageUrl === undefined ? existing[0].image_url : input.imageUrl || null, input.active ? 1 : 0, id],
     );
   });
   return (await getCategory(id))!;
