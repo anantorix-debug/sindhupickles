@@ -19,6 +19,8 @@ export async function GET() {
     tables: 0,
     expectedTables: EXPECTED_TABLES,
     uploadsWritable: false,
+    // true when uploads are stored outside the app folder (UPLOAD_DIR). On Hostinger every deploy gets a new app folder, so without it photos are lost on the next deploy.
+    uploadDirSet: Boolean(process.env.UPLOAD_DIR),
     authSecretSet: (process.env.AUTH_SECRET ?? "").length >= 32,
     siteUrlSet: Boolean(process.env.NEXT_PUBLIC_SITE_URL),
   };
