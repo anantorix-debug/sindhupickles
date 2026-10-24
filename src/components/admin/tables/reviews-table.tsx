@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { Eye, EyeOff, Star, Trash2 } from "lucide-react";
+import { Check, Eye, EyeOff, Star, Trash2 } from "lucide-react";
 import { DataTable, type Column, type TableFilter } from "@/components/admin/tables/data-table";
 import { RowActions } from "@/components/admin/tables/row-actions";
 import { StatusBadge } from "@/components/admin/badges/status-badge";
@@ -56,12 +56,17 @@ const columns: Column<Review>[] = [
     ),
   },
   { id: "date", header: "Date", sortValue: (r) => r.createdAt, cell: (r) => <span className="whitespace-nowrap">{formatDate(r.createdAt)}</span> },
-  { id: "status", header: "Status", cell: (r) => <StatusBadge label={r.visible ? "Visible" : "Hidden"} tone={r.visible ? "success" : "neutral"} /> },
+  {
+    id: "status",
+    header: "Status",
+    cell: (r) =>
+      r.status === "pending" ? <StatusBadge label="Awaiting approval" tone="warning" /> : <StatusBadge label={r.visible ? "Visible" : "Hidden"} tone={r.visible ? "success" : "neutral"} />,
+  },
 ];
 
 const filters: TableFilter<Review>[] = [
   { id: "rating", label: "Rating", options: [5, 4, 3, 2, 1].map((n) => ({ value: String(n), label: `${n} star${n > 1 ? "s" : ""}` })), matches: (r, v) => String(r.rating) === v },
-  { id: "status", label: "Status", options: [{ value: "visible", label: "Visible" }, { value: "hidden", label: "Hidden" }], matches: (r, v) => (v === "visible") === r.visible },
+  { id: "status", label: "Status", options: [{ value: "pending", label: "Awaiting approval" }, { value: "visible", label: "Visible" }, { value: "hidden", label: "Hidden" }], matches: (r, v) => (v === "pending" ? r.status === "pending" : r.status === "approved" && (v === "visible") === r.visible) },
 ];
 
 export function ReviewsTable({ reviews }: { reviews: Review[] }) {
@@ -96,12 +101,14 @@ export function ReviewsTable({ reviews }: { reviews: Review[] }) {
         searchPlaceholder="Search reviews"
         filters={filters}
         emptyTitle="No reviews yet"
-        emptyDescription="Customer reviews appear here once the storefront starts collecting them."
+        emptyDescription="Reviews written by customers who received their order appear here for approval."
         rowActions={(r) => (
           <RowActions
             label={`review by ${r.customerName}`}
             actions={[
-              { label: r.visible ? "Hide" : "Show", icon: r.visible ? <EyeOff /> : <Eye />, onSelect: () => toggle.mutate(r) },
+              r.status === "pending"
+                ? { label: "Approve", icon: <Check />, onSelect: () => toggle.mutate(r) }
+                : { label: r.visible ? "Hide" : "Show", icon: r.visible ? <EyeOff /> : <Eye />, onSelect: () => toggle.mutate(r) },
               {
                 label: "Delete",
                 icon: <Trash2 />,

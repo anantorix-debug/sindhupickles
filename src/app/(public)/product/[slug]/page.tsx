@@ -7,9 +7,12 @@ import { Rating } from "@/components/store/common/rating";
 import { ProductGrid } from "@/components/store/home/product-section";
 import { ProductGallery } from "@/components/store/product/product-gallery";
 import { PurchasePanel } from "@/components/store/product/purchase-panel";
+import { ReviewPrompt } from "@/components/store/product/review-prompt";
 import { formatDate } from "@/lib/format";
 import { legacySeo } from "@/content/legacy-seo";
 import { getProductBySlug } from "@/server/store/catalog";
+import { reviewEligibility } from "@/server/store/reviews";
+import { getSessionCustomerId } from "@/server/store/session";
 
 type Props = PageProps<"/product/[slug]">;
 
@@ -123,9 +126,10 @@ export default async function ProductPage({ params }: Props) {
         </div>
       </div>
 
-      {product.reviews.length > 0 && (
-        <section aria-labelledby="reviews-title" className="mt-16 space-y-6">
-          <h2 id="reviews-title" className="font-display text-2xl font-bold">Customer reviews</h2>
+      <section aria-labelledby="reviews-title" className="mt-16 space-y-6">
+        <h2 id="reviews-title" className="font-display text-2xl font-bold">Customer reviews</h2>
+        {product.reviews.length === 0 && <p className="text-sm text-muted">No reviews yet.</p>}
+        {product.reviews.length > 0 && (
           <ul className="grid gap-4 md:grid-cols-2">
             {product.reviews.map((r) => (
               <li key={r.id} className="space-y-2 rounded-lg border border-border bg-surface p-5">
@@ -136,8 +140,9 @@ export default async function ProductPage({ params }: Props) {
               </li>
             ))}
           </ul>
-        </section>
-      )}
+        )}
+        <ReviewPrompt state={await reviewEligibility(await getSessionCustomerId(), product.id)} productSlug={product.slug} />
+      </section>
 
       {product.related.length > 0 && (
         <section aria-labelledby="related-title" className="mt-16 space-y-6">

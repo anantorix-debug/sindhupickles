@@ -110,3 +110,13 @@ export const enquirySchema = z.object({
 });
 export type EnquiryFormValues = z.input<typeof enquirySchema>;
 export type EnquiryInput = z.output<typeof enquirySchema>;
+
+/** A customer's review of a product they have received. */
+export const reviewSchema = z.object({
+  productSlug: z.string().trim().min(1).max(190),
+  rating: z.number({ error: "Choose a star rating" }).int().min(1, "Choose a star rating").max(5, "Choose a star rating"),
+  title: z.string().trim().max(100, "Keep the title under 100 characters").optional(),
+  comment: z.string().trim().min(10, "Tell us a little more (at least 10 characters)").max(1500, "Please keep it under 1500 characters"),
+});
+export type ReviewFormValues = z.input<typeof reviewSchema>;
+export type ReviewInput = z.output<typeof reviewSchema>;

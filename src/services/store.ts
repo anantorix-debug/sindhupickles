@@ -8,6 +8,7 @@ import type {
   ProfileInput,
   RegisterInput,
   ResetPasswordInput,
+  ReviewInput,
 } from "@/lib/validation/store";
 import type { CartItemInput, CustomerPreferences, CustomerProfile, PaymentOption, PricedCart, StoreProductCard } from "@/types/store";
 import { api } from "./api-client";
@@ -26,6 +27,7 @@ export const storeApi = {
   suggestions: (q: string) => get<StoreProductCard[]>(`/search?q=${encodeURIComponent(q)}`),
   validateCart: (items: CartItemInput[], couponCode?: string) => post<PricedCart>("/cart/validate", { items, couponCode }),
   paymentOptions: () => get<PaymentOption[]>("/checkout/options"),
+  submitReview: (v: ReviewInput) => post<{ status: "pending" }>("/reviews", v),
   checkout: (body: unknown) =>
     post<{ orderId: string; orderNumber: string; total: number; status: string; paymentStatus: string }>("/checkout", body),
 

@@ -223,7 +223,7 @@ async function reviewsFor(productId: number): Promise<StoreReview[]> {
   const rows = await query(
     `SELECT r.id, r.rating, r.title, r.comment, r.created_at, c.name AS customer_name
      FROM reviews r JOIN customers c ON c.id = r.customer_id
-     WHERE r.product_id = ? AND r.is_visible = 1 ORDER BY r.created_at DESC LIMIT 6`,
+     WHERE r.product_id = ? AND r.is_visible = 1 AND r.status = 'APPROVED' ORDER BY r.created_at DESC LIMIT 6`,
     [productId],
   );
   return rows.map((r) => ({
@@ -241,7 +241,7 @@ export async function getLatestReviews(limit = 3): Promise<(StoreReview & { prod
   const rows = await query(
     `SELECT r.id, r.rating, r.title, r.comment, r.created_at, c.name AS customer_name, p.name AS product_name
      FROM reviews r JOIN customers c ON c.id = r.customer_id JOIN products p ON p.id = r.product_id
-     WHERE r.is_visible = 1 AND r.rating >= 4 AND r.comment IS NOT NULL AND p.status = 'ACTIVE'
+     WHERE r.is_visible = 1 AND r.status = 'APPROVED' AND r.rating >= 4 AND r.comment IS NOT NULL AND p.status = 'ACTIVE'
      ORDER BY r.created_at DESC LIMIT ?`,
     [limit],
   );

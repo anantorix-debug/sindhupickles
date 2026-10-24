@@ -287,6 +287,8 @@ export interface Review {
   title: string | null;
   comment: string | null;
   visible: boolean;
+  /** "pending" = written by a customer and waiting for approval. */
+  status: "pending" | "approved";
   createdAt: string;
 }
 
