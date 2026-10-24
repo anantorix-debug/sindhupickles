@@ -4,7 +4,6 @@ import { CtaBand } from "@/components/store/home/cta-band";
 import { WhyUs } from "@/components/store/home/why-us";
 import { getPublicBusiness } from "@/server/store/catalog";
 
-export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Our Story",

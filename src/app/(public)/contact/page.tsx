@@ -6,7 +6,6 @@ import { StoreProviders } from "@/components/store/providers";
 import { ContactForm } from "@/components/store/forms/contact-form";
 import { getPublicBusiness } from "@/server/store/catalog";
 
-export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Contact Us",

@@ -13,8 +13,6 @@ import { getProductBySlug } from "@/server/store/catalog";
 
 type Props = PageProps<"/product/[slug]">;
 
-// Cached; Admin edits (price, stock, images, status) refresh it immediately via revalidation.
-export const revalidate = 300;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProductBySlug((await params).slug);

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { policies } from "@/content/policies";
 
-export const revalidate = 3600;
 
 export function generateStaticParams() {
   return Object.keys(policies).map((slug) => ({ slug }));

@@ -9,8 +9,6 @@ import { ReviewsSection } from "@/components/store/home/reviews-section";
 import { WhyUs } from "@/components/store/home/why-us";
 import { getBestSellers, getLatestReviews, getPublicBusiness, listCategories, listProducts } from "@/server/store/catalog";
 
-// Cached and regenerated at most every 5 minutes; admin changes also refresh it immediately.
-export const revalidate = 300;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },

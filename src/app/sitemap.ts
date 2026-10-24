@@ -3,8 +3,8 @@ import { listCategories, listProductSlugs } from "@/server/store/catalog";
 
 const site = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
-// Built from the database, so new products and categories appear without a rebuild.
-export const revalidate = 3600;
+// Built from the database on request, so new products appear immediately and the build never needs the database.
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [products, categories] = await Promise.all([listProductSlugs(), listCategories()]);

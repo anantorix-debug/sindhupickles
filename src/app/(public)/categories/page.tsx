@@ -5,7 +5,6 @@ import { StateMessage } from "@/components/store/common/state-message";
 import { listCategories } from "@/server/store/catalog";
 import Link from "next/link";
 
-export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Pickle Categories",

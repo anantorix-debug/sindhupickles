@@ -7,6 +7,9 @@ import { getSettings } from "@/server/repositories/settings";
  * Customer-facing site. Everything here reads the same database/API as the admin panel; the
  * admin lives under /admin and shares nothing with this tree except UI primitives and types.
  */
+// Served on demand: every page reads the live database (store settings, catalog), so the build must not need it.
+export const dynamic = "force-dynamic";
+
 export default async function PublicLayout({ children }: LayoutProps<"/">) {
   const business = await getSettings();
   return (
