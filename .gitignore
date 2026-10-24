@@ -48,3 +48,4 @@ next-env.d.ts
 
 # live admin login (generated locally, never commit)
 /live-admin-credentials.txt
+/live-admin.sql
