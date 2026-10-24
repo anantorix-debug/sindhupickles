@@ -9,11 +9,11 @@ export function CategoryTile({ category }: { category: StoreCategory }) {
   return (
     <Link
       href={`/categories/${category.slug}`}
-      className="flex flex-col items-center gap-3 rounded-lg border border-border bg-surface p-4 text-center transition-colors hover:border-primary sm:gap-4 sm:p-6"
+      className="reveal hover-lift group flex flex-col items-center gap-3 rounded-lg border border-border bg-surface p-4 text-center hover:border-primary sm:gap-4 sm:p-6"
     >
       <span className="relative size-16 overflow-hidden rounded-full bg-surface-raised sm:size-20">
         {src ? (
-          <Image src={src} alt="" fill sizes="80px" className="object-cover" />
+          <Image src={src} alt="" fill sizes="80px" className="object-cover transition-transform duration-500 ease-out group-hover:rotate-6 group-hover:scale-110" />
         ) : (
           <span className="flex size-full items-center justify-center font-display text-2xl font-bold text-accent">{category.name[0]}</span>
         )}

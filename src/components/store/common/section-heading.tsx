@@ -11,7 +11,7 @@ interface SectionHeadingProps {
 
 export function SectionHeading({ title, description, eyebrow, as: Tag = "h2", align = "center", className }: SectionHeadingProps) {
   return (
-    <div className={cn("space-y-3", align === "center" && "text-center", className)}>
+    <div className={cn("reveal space-y-3", align === "center" && "text-center", className)}>
       {eyebrow && (
         <span className="inline-block rounded-sm bg-accent-soft px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-accent">{eyebrow}</span>
       )}

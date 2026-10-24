@@ -10,7 +10,7 @@ const POINTS = [
 
 export function ProductHighlights() {
   return (
-    <section aria-labelledby="highlights-title" className="rounded-lg border border-border bg-surface p-5">
+    <section aria-labelledby="highlights-title" className="reveal rounded-lg border border-border bg-surface p-5">
       <h2 id="highlights-title" className="mb-4 font-display text-lg font-bold">Why you&apos;ll love it</h2>
       <ul className="grid gap-4 sm:grid-cols-2">
         {POINTS.map(({ Icon, title, text }) => (

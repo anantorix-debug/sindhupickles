@@ -13,7 +13,7 @@ export function ReviewsSection({ reviews }: { reviews: (StoreReview & { productN
         </div>
         <ul className="grid gap-6 md:grid-cols-3">
           {reviews.map((r) => (
-            <li key={r.id} className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-6 sm:p-8">
+            <li key={r.id} className="reveal hover-lift flex flex-col gap-4 rounded-lg border border-border bg-surface p-6 sm:p-8">
               <Rating value={r.rating} />
               <blockquote className="flex-1 text-[15px] italic leading-relaxed">“{r.comment}”</blockquote>
               <footer>

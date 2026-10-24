@@ -23,7 +23,7 @@ export function Hero({ couponCode, couponPct }: { couponCode: string; couponPct:
             Savor the rich, traditional heritage of handmade Indian delicacies. Crafted with premium bone-less cuts, slow-cooked to perfection, and infused with freshly ground cold-pressed spices.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-            <Button asChild size="lg">
+            <Button asChild size="lg" className="shine">
               <Link href="/shop">
                 Shop Pure Spice Now <ArrowRight className="size-4" aria-hidden />
               </Link>
@@ -33,7 +33,7 @@ export function Hero({ couponCode, couponPct }: { couponCode: string; couponPct:
             </Button>
           </div>
         </div>
-        <div className="relative aspect-[520/450] w-full overflow-hidden rounded-3xl bg-surface lg:h-[450px]">
+        <div className="float-slow relative aspect-[520/450] w-full overflow-hidden rounded-3xl bg-surface lg:h-[450px]">
           <Image src={siteImages.hero} alt="A jar of homemade non-veg pickle with whole red chillies" fill priority sizes="(min-width:1024px) 520px, 100vw" className="object-cover" />
         </div>
       </PageContainer>

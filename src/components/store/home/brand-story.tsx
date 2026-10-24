@@ -21,7 +21,7 @@ export function BrandStory() {
   return (
     <section aria-labelledby="story-title" className="bg-section-warm">
       <PageContainer className="grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-[1fr_480px] lg:gap-16 lg:py-[100px]">
-        <div className="space-y-6">
+        <div className="reveal space-y-6">
           <p className="text-sm font-bold uppercase tracking-[0.06em] text-accent">The Pure Taste of Tradition</p>
           <h2 id="story-title" className="font-display text-3xl font-black leading-tight sm:text-4xl lg:text-[44px]">
             Homemade Pickles Crafted with Generational Recipes
@@ -48,7 +48,7 @@ export function BrandStory() {
             ))}
           </ul>
         </div>
-        <div className="relative mx-auto aspect-[4/3] w-full max-w-[480px] overflow-hidden rounded-3xl border border-border bg-surface">
+        <div className="reveal hover-lift relative mx-auto aspect-[4/3] w-full max-w-[480px] overflow-hidden rounded-3xl border border-border bg-surface">
           <Image src={siteImages.brandStory} alt="Sindhu's Pickles jars — chicken, mutton, fish and prawn — with whole spices" fill sizes="(min-width:1024px) 480px, 100vw" className="object-cover" />
         </div>
       </PageContainer>

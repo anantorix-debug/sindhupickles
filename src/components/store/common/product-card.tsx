@@ -12,9 +12,9 @@ export function ProductCard({ product, priority = false, headingLevel = 3 }: { p
   const badge = !product.inStock ? "Out of stock" : product.compareAtPrice ? "Sale" : product.lowStock ? "Few left" : null;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-card transition-colors hover:border-primary/60">
+    <article className="reveal hover-lift group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-card hover:border-primary/60">
       <Link href={href} className="relative block aspect-[7/5] w-full overflow-hidden bg-surface-raised sm:aspect-[7/5]" tabIndex={-1} aria-hidden>
-        <ProductImage src={product.imageUrl} alt="" sizes="(min-width:1280px) 280px, (min-width:768px) 33vw, 50vw" priority={priority} className="transition-transform duration-300 group-hover:scale-105" />
+        <ProductImage src={product.imageUrl} alt="" sizes="(min-width:1280px) 280px, (min-width:768px) 33vw, 50vw" priority={priority} className="transition-transform duration-500 ease-out group-hover:scale-110" />
         {badge && (
           <span className={`absolute left-2 top-2 rounded-sm px-2 py-1 text-[11px] font-bold uppercase tracking-wide ${badge === "Out of stock" ? "bg-danger text-white" : "bg-primary text-white"}`}>
             {badge}

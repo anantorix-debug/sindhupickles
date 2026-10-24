@@ -205,7 +205,8 @@ const mapCategory = (r: Row): StoreCategory => ({
   name: r.name,
   slug: r.slug,
   description: r.description ?? "",
-  imageUrl: r.image_url ?? r.product_image ?? null,
+  // Only a real uploaded picture counts (old sample rows point at files that do not exist); else the first product photo.
+  imageUrl: (r.image_url && isUsableImage(r.image_url) ? r.image_url : null) ?? r.product_image ?? null,
   productCount: Number(r.product_count),
 });
 

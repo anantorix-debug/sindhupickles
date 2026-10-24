@@ -9,10 +9,10 @@ export function WhyUs() {
   return (
     <section aria-labelledby="why-title">
       <PageContainer className="grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-[540px_1fr] lg:gap-16 lg:py-[100px]">
-        <div className="relative aspect-[540/400] w-full overflow-hidden rounded-3xl bg-surface">
+        <div className="reveal relative aspect-[540/400] w-full overflow-hidden rounded-3xl bg-surface">
           <Image src={siteImages.whyUs} alt="Hands blending whole spices in a wooden bowl" fill sizes="(min-width:1024px) 540px, 100vw" className="object-cover" />
         </div>
-        <div className="space-y-6">
+        <div className="reveal space-y-6">
           <h2 id="why-title" className="font-display text-3xl font-black leading-tight sm:text-4xl lg:text-[42px] lg:leading-[1.2]">
             Why Sindhu&apos;s Pickles? We Make the Best Non-Veg Pickles
           </h2>
