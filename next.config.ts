@@ -9,6 +9,21 @@ const nextConfig: NextConfig = {
   ...(process.env.NEXT_OUTPUT === "standalone" ? { output: "standalone" as const } : {}),
   // Dev mode only: lets the site be opened through a Cloudflare quick tunnel (needed to test Razorpay webhooks locally).
   allowedDevOrigins: ["*.trycloudflare.com"],
+  poweredByHeader: false,
+  // Safe, widely supported hardening headers. (No Content-Security-Policy yet: it must be tuned for Razorpay Checkout first.)
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Strict-Transport-Security", value: "max-age=31536000" },
+        ],
+      },
+    ];
+  },
   // We strip trailing slashes ourselves (last rule below) so old URLs redirect in ONE hop.
   skipTrailingSlashRedirect: true,
   // Shared hosting caps how many threads one account may run, so the build uses a single worker. (The compiler's

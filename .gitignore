@@ -45,3 +45,6 @@ next-env.d.ts
 /uploads/
 .next-test/
 /.next-*/
+
+# live admin login (generated locally, never commit)
+/live-admin-credentials.txt
