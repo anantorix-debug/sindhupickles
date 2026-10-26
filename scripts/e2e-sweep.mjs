@@ -38,7 +38,7 @@ try {
   // ---------- public site ----------
   const prod = await one("SELECT p.id, p.slug FROM products p JOIN categories c ON c.id=p.category_id WHERE p.status='ACTIVE' AND c.active=1 ORDER BY p.id LIMIT 1");
   const cat = await one("SELECT slug FROM categories WHERE parent_id IS NULL AND active=1 ORDER BY id LIMIT 1");
-  for (const p of ["/", "/shop", "/shop?q=pickle", "/shop?sort=price-asc", "/categories", `/categories/${cat.slug}`, `/product/${prod.slug}`, "/cart", "/login", "/register", "/forgot-password", "/contact", "/about", "/policies/shipping-return-refund", "/policies/privacy", "/policies/terms"]) await page(p);
+  for (const p of ["/", "/shop", "/shop?q=pickle", "/shop?sort=price-asc", "/categories", `/categories/${cat.slug}`, `/product/${prod.slug}`, "/cart", "/login", "/register", "/forgot-password", "/contact", "/about", "/blog", "/policies/shipping-return-refund", "/policies/privacy", "/policies/terms"]) await page(p);
   await page("/product/does-not-exist", { expect: 404 });
   await page("/categories/does-not-exist", { expect: 404 });
   await page("/policies/nope", { expect: 404 });

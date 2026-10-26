@@ -9,6 +9,7 @@ import { mainNav } from "@/config/store-nav";
 /**
  * Server-rendered shell with small client islands (search, account, cart, mobile menu).
  * Desktop: logo · nav · search · account · cart.   Mobile: menu · logo · search · cart.
+ * (1024–1279px: the search box becomes a search button so the row fits.)
  */
 export function StoreHeader({ tagline }: { tagline: string }) {
   return (
@@ -32,8 +33,9 @@ export function StoreHeader({ tagline }: { tagline: string }) {
         </nav>
 
         <div className="ml-auto flex items-center gap-1 sm:gap-3 lg:ml-0">
-          <SearchBox className="hidden w-64 lg:block" />
-          <div className="lg:hidden">
+          {/* Below 1280px the full search box doesn't fit beside the menu, so the search button is used instead. */}
+          <SearchBox className="hidden w-64 xl:block" />
+          <div className="xl:hidden">
             <MobileSearchButton />
           </div>
           <div className="hidden lg:block">

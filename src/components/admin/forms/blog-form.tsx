@@ -93,7 +93,7 @@ export function BlogForm({ post, categories }: { post?: BlogPost; categories: st
             <FormField label="Excerpt" htmlFor="excerpt" error={errors.excerpt?.message} hint="Short summary shown in post lists.">
               <Textarea {...fieldA11y("excerpt", errors.excerpt?.message, true)} rows={2} {...register("excerpt")} />
             </FormField>
-            <FormField label="Body" htmlFor="content" required error={errors.content?.message} hint="Blank lines separate paragraphs. Estimated read time is calculated automatically.">
+            <FormField label="Body" htmlFor="content" required error={errors.content?.message} hint="Blank lines separate paragraphs. Start a line with ## for a heading, - for a bullet point. **bold** and [link text](https://…) also work. Read time is calculated automatically.">
               <Textarea {...fieldA11y("content", errors.content?.message, true)} rows={16} {...register("content")} />
             </FormField>
           </CardContent>

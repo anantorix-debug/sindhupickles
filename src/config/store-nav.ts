@@ -7,10 +7,14 @@ export const mainNav = [
   { label: "Contact", href: "/contact" },
 ] as const;
 
+/** Phone menu: the main links plus pages with no room in the desktop header. */
+export const mobileNav = [...mainNav.slice(0, 4), { label: "Blog", href: "/blog" }, mainNav[4]] as const;
+
 export const footerQuickLinks = [
   { label: "Our Story", href: "/about" },
   { label: "Shop Collection", href: "/shop" },
   { label: "Categories", href: "/categories" },
+  { label: "Blog", href: "/blog" },
   { label: "My Orders", href: "/account/orders" },
   { label: "Contact Us", href: "/contact" },
 ] as const;

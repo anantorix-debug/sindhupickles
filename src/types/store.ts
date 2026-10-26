@@ -138,6 +138,35 @@ export interface PaymentOption {
   description: string;
 }
 
+/** A published blog post as listed on /blog. */
+export interface StoreBlogCard {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  featuredImage: string | null;
+  authorName: string | null;
+  readTime: number | null;
+  publishedAt: string;
+}
+
+export interface StoreBlogPost extends StoreBlogCard {
+  id: string;
+  content: string;
+  tags: string[];
+  metaTitle: string;
+  metaDescription: string;
+  updatedAt: string;
+}
+
+export interface BlogListResult {
+  posts: StoreBlogCard[];
+  total: number;
+  page: number;
+  pageCount: number;
+  categories: { name: string; count: number }[];
+}
+
 export interface PublicBusiness {
   name: string;
   tagline: string;

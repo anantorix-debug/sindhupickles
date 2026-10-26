@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { BrandLogo } from "@/components/brand/logo";
 import { SearchBox } from "@/components/store/layout/search-box";
-import { mainNav } from "@/config/store-nav";
+import { mobileNav } from "@/config/store-nav";
 
 /** Loaded on first tap only (see mobile-menu.tsx), so the dialog library isn't in the initial bundle. */
 export function NavDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
@@ -22,7 +22,7 @@ export function NavDrawer({ open, onOpenChange }: { open: boolean; onOpenChange:
         </div>
         <nav aria-label="Mobile" className="flex-1 overflow-y-auto p-3">
           <ul className="space-y-1">
-            {[...mainNav, { label: "My Account", href: "/account" }, { label: "Cart", href: "/cart" }].map((l) => (
+            {[...mobileNav, { label: "My Account", href: "/account" }, { label: "Cart", href: "/cart" }].map((l) => (
               <li key={l.href}>
                 <Link href={l.href} onClick={() => onOpenChange(false)} className="flex h-12 items-center rounded-md px-3 text-base font-medium hover:bg-surface-raised hover:text-accent">
                   {l.label}

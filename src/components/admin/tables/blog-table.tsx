@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable, type Column, type TableFilter } from "@/components/admin/tables/data-table";
 import { RowActions } from "@/components/admin/tables/row-actions";
@@ -73,6 +73,7 @@ export function BlogTable({ posts }: { posts: BlogPostSummary[] }) {
             label={p.title}
             actions={[
               { label: "Edit", href: `/admin/blog/${p.id}/edit`, icon: <Pencil /> },
+              ...(p.status === "published" ? [{ label: "View on site", href: `/blog/${p.slug}`, icon: <ExternalLink /> }] : []),
               {
                 label: "Delete",
                 icon: <Trash2 />,

@@ -22,7 +22,7 @@ Status: ✅ done and tested · ◐ done, needs owner input · ❌ not done
 | About page | Done | ✅ |
 | Newsletter signup | Stored in DB; list viewable by Admin | ✅ |
 | Reviews | Shown on site; moderated in Admin | ✅ |
-| Blog | Admin blog manager exists; the old site had no real posts | ✅ |
+| Blog | Admin → Blog writes posts; published posts appear on /blog and /blog/&lt;slug&gt; (category filter, related posts, sitemap, BlogPosting data); the old site had no real posts | ✅ |
 | Coupons | Percent/flat coupons, welcome code | ✅ |
 | WhatsApp / social links | Fields exist in Admin → Settings; values needed | ◐ |
 | Old URLs keep working | One-hop redirects | ✅ |
