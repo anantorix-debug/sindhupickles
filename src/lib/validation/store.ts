@@ -120,3 +120,10 @@ export const reviewSchema = z.object({
 });
 export type ReviewFormValues = z.input<typeof reviewSchema>;
 export type ReviewInput = z.output<typeof reviewSchema>;
+
+/** Admin sets a new password for a customer (e.g. after they call the shop because they forgot it). */
+export const adminSetPasswordSchema = z
+  .object({ password, confirmPassword: z.string() })
+  .refine((v) => v.password === v.confirmPassword, { path: ["confirmPassword"], message: "Passwords don't match" });
+export type AdminSetPasswordFormValues = z.input<typeof adminSetPasswordSchema>;
+export type AdminSetPasswordInput = z.output<typeof adminSetPasswordSchema>;

@@ -79,6 +79,23 @@ export async function changePassword(customerId: string, input: ChangePasswordIn
   await execute("UPDATE customer_credentials SET password_hash = ? WHERE customer_id = ?", [await hashPassword(input.newPassword), customerId]);
 }
 
+/**
+ * Shop owner sets a new password for a customer from Admin -> Customers (the customer contacted the shop and the owner
+ * checked it is really them). Any unused email reset links for that customer stop working.
+ */
+export async function adminSetPassword(customerId: string, password: string): Promise<void> {
+  const hash = await hashPassword(password);
+  await transaction(async (conn) => {
+    const [c] = await conn.query<import("@/server/db").Row[]>("SELECT id FROM customers WHERE id = ? FOR UPDATE", [customerId]);
+    if (!c[0]) throw new ApiError(404, "Customer not found", "not_found");
+    await conn.query(
+      "INSERT INTO customer_credentials (customer_id, password_hash, preferences) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash)",
+      [customerId, hash, JSON.stringify(DEFAULT_PREFS)],
+    );
+    await conn.query("DELETE FROM password_resets WHERE customer_id = ?", [customerId]);
+  });
+}
+
 export async function updatePreferences(customerId: string, prefs: CustomerPreferences): Promise<void> {
   await execute("UPDATE customer_credentials SET preferences = ? WHERE customer_id = ?", [JSON.stringify(prefs), customerId]);
 }

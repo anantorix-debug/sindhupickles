@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/admin/common/page-header";
 import { DetailCard } from "@/components/admin/common/detail-list";
 import { CustomerStatusBadge } from "@/components/admin/badges/status-badge";
+import { CustomerPasswordDialog } from "@/components/admin/dialogs/customer-password";
 import { OrdersTable } from "@/components/admin/tables/orders-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/admin/badges/status-badge";
@@ -28,6 +29,7 @@ export default async function CustomerDetailPage({ params }: PageProps<"/admin/c
         description={customer.city ? `${customer.city}${customer.state ? `, ${customer.state}` : ""}` : undefined}
         backHref="/admin/customers"
         backLabel="Customers"
+        actions={<CustomerPasswordDialog customerId={customer.id} customerName={customer.name} />}
       />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
