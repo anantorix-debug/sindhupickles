@@ -1,6 +1,21 @@
 import type { NextConfig } from "next";
 import { legacyPrefixRedirects, legacyRedirects, legacySitemapTypes } from "./src/config/legacy-redirects";
 
+function wwwToApex() {
+  let host = "";
+  try {
+    host = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "").host;
+  } catch {
+    return [];
+  }
+  if (!host || host.startsWith("www.") || host.startsWith("localhost") || /^\d/.test(host)) return [];
+  const has = [{ type: "host" as const, value: `www.${host}` }];
+  return [
+    { source: "/:path+/", has, destination: `https://${host}/:path+`, permanent: true },
+    { source: "/:path*", has, destination: `https://${host}/:path*`, permanent: true },
+  ];
+}
+
 // A plain object on purpose: Hostinger's Next.js deployment ignores a function config (and then loses these settings).
 const nextConfig: NextConfig = {
   // Lets automated tests build to a separate folder without disturbing a running dev server.
@@ -31,6 +46,8 @@ const nextConfig: NextConfig = {
   experimental: { cpus: 1, webpackBuildWorker: false, staticGenerationMaxConcurrency: 2, parallelServerCompiles: false, parallelServerBuildTraces: false },
   async redirects() {
     return [
+      // www.<site> -> <site>, so search engines see one address (taken from NEXT_PUBLIC_SITE_URL at build time).
+      ...wwwToApex(),
       // Both the trailing-slash and plain form of each old path, straight to the destination.
       ...legacyRedirects.flatMap(({ from, to }) => [
         { source: `${from}/`, destination: to, permanent: true },
