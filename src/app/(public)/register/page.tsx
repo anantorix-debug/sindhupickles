@@ -3,7 +3,7 @@ import { AuthCard } from "@/components/store/forms/auth-card";
 import { RegisterForm } from "@/components/store/forms/auth-forms";
 import { redirectIfSignedIn, safeNext } from "@/server/store/page-auth";
 
-export const metadata: Metadata = { title: "Create account", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Create account", description: "Create a Sindhu's Pickles account to order homemade non-veg pickles, track deliveries and get first-order offers.", alternates: { canonical: "/register" } };
 
 export default async function RegisterPage({ searchParams }: PageProps<"/register">) {
   const raw = (await searchParams).next;

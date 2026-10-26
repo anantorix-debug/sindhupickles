@@ -3,7 +3,7 @@ import { PageContainer } from "@/components/store/common/section-heading";
 import { StoreProviders } from "@/components/store/providers";
 import { CartView } from "@/components/store/cart/cart-view";
 
-export const metadata: Metadata = { title: "Your Cart", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Your Cart", description: "Review the homemade pickles in your cart and check out securely.", alternates: { canonical: "/cart" } };
 
 export default function CartPage() {
   return (
