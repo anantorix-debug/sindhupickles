@@ -96,6 +96,16 @@ export async function adminSetPassword(customerId: string, password: string): Pr
   });
 }
 
+/**
+ * Forgot password without email (the owner's choice, switchable in Admin -> Settings): sets the new password for the
+ * account with this email, with no code or link. The caller checks the setting and rate-limits.
+ */
+export async function directResetPassword(email: string, password: string): Promise<void> {
+  const [c] = await query("SELECT id FROM customers WHERE email = ? AND status = 'ACTIVE'", [email]);
+  if (!c) throw new ApiError(404, "We couldn't find an account with this email.", "not_found", { email: "No account with this email" });
+  await adminSetPassword(String(c.id), password);
+}
+
 export async function updatePreferences(customerId: string, prefs: CustomerPreferences): Promise<void> {
   await execute("UPDATE customer_credentials SET preferences = ? WHERE customer_id = ?", [JSON.stringify(prefs), customerId]);
 }

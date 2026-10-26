@@ -99,6 +99,24 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
 
       <Card>
         <CardHeader>
+          <CardTitle>Customer accounts</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <label htmlFor="selfPasswordReset" className="text-sm font-semibold">Reset password without email check</label>
+              <p className="text-xs text-muted">
+                On the Forgot password page, customers type their email and a new password, with no code or link. Anyone who knows a
+                customer&apos;s email can change that customer&apos;s password, so switch this off once email is set up.
+              </p>
+            </div>
+            <Switch id="selfPasswordReset" {...register("selfPasswordReset")} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Social links</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-5 sm:grid-cols-3">

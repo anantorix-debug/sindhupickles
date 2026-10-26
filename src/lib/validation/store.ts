@@ -33,6 +33,13 @@ export const resetPasswordSchema = z
 export type ResetPasswordFormValues = z.input<typeof resetPasswordSchema>;
 export type ResetPasswordInput = z.output<typeof resetPasswordSchema>;
 
+/** Forgot password without email: account email + new password (only while Admin -> Settings allows it). */
+export const directResetSchema = z
+  .object({ email, password, confirmPassword: z.string() })
+  .refine((v) => v.password === v.confirmPassword, { path: ["confirmPassword"], message: "Passwords don't match" });
+export type DirectResetFormValues = z.input<typeof directResetSchema>;
+export type DirectResetInput = z.output<typeof directResetSchema>;
+
 export const profileSchema = z.object({ name, phone: mobile });
 export type ProfileFormValues = z.input<typeof profileSchema>;
 export type ProfileInput = z.output<typeof profileSchema>;

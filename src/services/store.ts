@@ -3,6 +3,7 @@ import type { Address, Order, OrderSummary } from "@/types";
 import type {
   AddressInput,
   ChangePasswordInput,
+  DirectResetInput,
   ForgotPasswordInput,
   LoginInput,
   ProfileInput,
@@ -23,6 +24,7 @@ export const storeApi = {
   logout: () => post("/auth/logout"),
   forgotPassword: (v: ForgotPasswordInput) => post("/auth/forgot-password", v),
   resetPassword: (v: ResetPasswordInput) => post("/auth/reset-password", v),
+  directReset: (v: DirectResetInput) => post("/auth/set-password", v),
 
   suggestions: (q: string) => get<StoreProductCard[]>(`/search?q=${encodeURIComponent(q)}`),
   validateCart: (items: CartItemInput[], couponCode?: string) => post<PricedCart>("/cart/validate", { items, couponCode }),

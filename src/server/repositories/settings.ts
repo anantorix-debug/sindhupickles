@@ -18,6 +18,8 @@ const DEFAULTS: StoreSettings = {
   lowStockDefault: 10,
   // Until the owner saves the toggle in Admin, fall back to the old env flag.
   codEnabled: process.env.ENABLE_COD === "true",
+  // On by the owner's choice while there is no email server; switch off in Admin -> Settings.
+  selfPasswordReset: true,
   notifyNewOrder: true,
   notifyLowStock: true,
   instagramUrl: "https://www.instagram.com/sindhuspickles",

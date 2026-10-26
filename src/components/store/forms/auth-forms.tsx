@@ -13,10 +13,13 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { FormField, fieldA11y } from "@/components/ui/form-field";
 import { FormError, FormSuccess } from "@/components/ui/form-feedback";
 import {
+  directResetSchema,
   forgotPasswordSchema,
   loginSchema,
   registerSchema,
   resetPasswordSchema,
+  type DirectResetFormValues,
+  type DirectResetInput,
   type LoginFormValues,
   type LoginInput,
   type RegisterFormValues,
@@ -126,6 +129,39 @@ export function ForgotPasswordForm() {
       </FormField>
       {mutation.isError && <FormError>{mutation.error.message}</FormError>}
       <Button type="submit" size="lg" className="w-full" loading={mutation.isPending}>Send reset link</Button>
+      <p className="text-center text-sm"><Link href="/login" className="text-accent hover:underline">Back to sign in</Link></p>
+    </form>
+  );
+}
+
+/** Forgot password without email: account email + new password (while Admin -> Settings allows it). */
+export function DirectResetForm() {
+  const { register, handleSubmit, setError, formState: { errors } } = useForm<DirectResetFormValues, unknown, DirectResetInput>({ resolver: zodResolver(directResetSchema) });
+  const onFieldErrors = useServerFieldErrors<DirectResetFormValues>(setError as never);
+  const mutation = useMutation({ mutationFn: storeApi.directReset, onError: onFieldErrors });
+  const apiError = mutation.error instanceof ApiRequestError ? mutation.error : null;
+
+  if (mutation.isSuccess) {
+    return (
+      <div className="space-y-4">
+        <FormSuccess>Your password has been changed. Sign in with your new password.</FormSuccess>
+        <Button asChild size="lg" className="w-full"><Link href="/login">Sign in</Link></Button>
+      </div>
+    );
+  }
+  return (
+    <form onSubmit={handleSubmit((v) => mutation.mutate(v))} noValidate className="space-y-5">
+      <FormField label="Email" htmlFor="email" required error={errors.email?.message} hint="The email you use to sign in.">
+        <Input {...fieldA11y("email", errors.email?.message, true)} type="email" autoComplete="email" inputMode="email" {...register("email")} />
+      </FormField>
+      <FormField label="New password" htmlFor="password" required error={errors.password?.message} hint="8+ characters, letters and numbers.">
+        <PasswordInput {...fieldA11y("password", errors.password?.message, true)} autoComplete="new-password" {...register("password")} />
+      </FormField>
+      <FormField label="Confirm new password" htmlFor="confirmPassword" required error={errors.confirmPassword?.message}>
+        <PasswordInput {...fieldA11y("confirmPassword", errors.confirmPassword?.message)} autoComplete="new-password" {...register("confirmPassword")} />
+      </FormField>
+      {mutation.isError && !apiError?.fields && <FormError>{(mutation.error as Error).message}</FormError>}
+      <Button type="submit" size="lg" className="w-full" loading={mutation.isPending}>Change password</Button>
       <p className="text-center text-sm"><Link href="/login" className="text-accent hover:underline">Back to sign in</Link></p>
     </form>
   );

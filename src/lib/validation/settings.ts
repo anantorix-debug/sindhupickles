@@ -30,6 +30,7 @@ export const settingsSchema = z.object({
   welcomeCouponPct: z.number({ error: "Discount is required" }).min(0, "Min 0%").max(100, "Max 100%"),
   lowStockDefault: money("Low-stock default"),
   codEnabled: z.boolean(),
+  selfPasswordReset: z.boolean(),
   notifyNewOrder: z.boolean(),
   notifyLowStock: z.boolean(),
   instagramUrl: socialUrl,

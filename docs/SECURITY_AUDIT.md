@@ -35,6 +35,8 @@ Scope: what was built and tested here. This is not a third-party penetration tes
 
 10. **`ADMIN_AUTH=off`** is a local-development escape hatch that disables admin sign-in. It must never be set in production (it is not set in `.env.local`).
 
+11. **Password reset without email check (owner's choice, on by default).** While Admin → Settings → "Reset password without email check" is on, the Forgot password page sets a new password from just the account email, so anyone who knows a customer's email can take over that account (name, phone, addresses, order history). Limits: 3 changes per email and 5 per client address per hour; each change is logged (`[auth] customer password changed…`). Switch it off once SMTP is configured: the page then sends a reset link by email (or, with no SMTP, asks customers to contact the shop, and the owner uses Admin → Customers → "Set new password").
+
 ## Test evidence (run in this session)
 
 - `eslint` and `tsc --noEmit`: clean.

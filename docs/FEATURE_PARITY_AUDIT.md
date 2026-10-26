@@ -15,7 +15,7 @@ Status: ✅ done and tested · ◐ done, needs owner input · ❌ not done
 | Courier tracking | ST Courier is the default carrier; AWB + link to stcourier.com tracking on the order page | ✅ |
 | Razorpay payments | Test mode verified (mock + real Test API); real card payment ◐; Live ❌ until approved | ◐ |
 | My account | `/account`: profile, orders (with tracking), addresses, settings | ✅ |
-| Register / login / forgot password | Done (email needs SMTP in production) | ◐ |
+| Register / login / forgot password | Done (direct reset by email + new password while the Admin → Settings switch is on; reset link needs SMTP) | ◐ |
 | Order emails (customer + shop owner) | Done; production needs SMTP | ◐ |
 | Privacy / Terms / Shipping-Return-Refund pages | `/policies/*` with real text | ✅ (owner to proof-read) |
 | Contact page / enquiries | Form → Admin → Enquiries | ✅ |

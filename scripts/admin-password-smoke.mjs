@@ -32,10 +32,14 @@ try {
   check("customer signs in with the NEW password", (await req("POST", "/api/store/auth/login", { email, password: "NewPassw0rd" })).status === 200);
   check("the OLD password no longer works", (await req("POST", "/api/store/auth/login", { email, password: "OldPassw0rd" })).status === 401);
 
-  const page = await (await fetch(`${BASE}/forgot-password`)).text();
-  const smtp = Boolean(process.env.SMTP_HOST);
-  check(smtp ? "forgot page shows the email form (SMTP configured)" : "forgot page (no email server) tells customers to call the shop, with the phone number", smtp ? /type="email"/.test(page) : /tel:/.test(page) && /set a new password for you/.test(page));
-  check("forgot page never offers a no-verification reset", !/type="password"/.test(page));
+  // With "Reset password without email check" switched on, the forgot page shows that form instead (direct-reset-smoke.mjs).
+  const direct = (await req("GET", "/api/settings", null, admin.cookie)).json?.data?.selfPasswordReset;
+  if (!direct) {
+    const page = await (await fetch(`${BASE}/forgot-password`)).text();
+    const smtp = Boolean(process.env.SMTP_HOST);
+    check(smtp ? "forgot page shows the email form (SMTP configured)" : "forgot page (no email server) tells customers to call the shop, with the phone number", smtp ? /type="email"/.test(page) : /tel:/.test(page) && /set a new password for you/.test(page));
+    check("forgot page offers no password form while the switch is off", !/type="password"/.test(page));
+  }
 } finally {
   if (customerId) await db.query("DELETE FROM customers WHERE id = ?", [customerId]);
   await admin.cleanup();

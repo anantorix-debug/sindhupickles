@@ -232,6 +232,8 @@ export interface StoreSettings {
   lowStockDefault: number;
   /** Offer cash on delivery at checkout. Switched on/off in Admin → Settings. */
   codEnabled: boolean;
+  /** Forgot password page lets customers set a new password with just their email (no email check). Admin → Settings. */
+  selfPasswordReset: boolean;
   notifyNewOrder: boolean;
   notifyLowStock: boolean;
   instagramUrl: string;
