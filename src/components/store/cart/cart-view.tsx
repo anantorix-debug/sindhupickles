@@ -71,8 +71,8 @@ export function CartView() {
             const max = Math.min(line?.available ?? MAX_CART_QTY, MAX_CART_QTY);
             return (
               <li key={entry.variantId} className="flex gap-4 p-4 sm:p-5">
-                <Link href={`/product/${slug}`} className="relative size-20 shrink-0 overflow-hidden rounded-md bg-surface-raised sm:size-24">
-                  <ProductImage src={imageUrl} alt={name} sizes="96px" />
+                <Link href={`/product/${slug}`} className="relative size-20 shrink-0 overflow-hidden rounded-md bg-white sm:size-24">
+                  <ProductImage src={imageUrl} alt={name} sizes="96px" className="object-contain" />
                 </Link>
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
                   <div className="flex items-start justify-between gap-3">
