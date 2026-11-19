@@ -19,6 +19,12 @@ export const settingsSchema = z.object({
     .trim()
     .regex(/^\+?[0-9 ()-]{7,18}$/, "Enter a valid phone number"),
   address: z.string().trim().min(10, "Enter the full store address"),
+  // 15 characters: 2-digit state code, PAN, entity number, Z, check character. Leave empty if not registered.
+  gstin: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .refine((v) => v === "" || /^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(v), "Enter a valid 15-character GSTIN, or leave it empty"),
   currency: z.string().length(3),
   freeShippingThreshold: money("Free-shipping threshold"),
   shippingFee: money("Shipping fee"),

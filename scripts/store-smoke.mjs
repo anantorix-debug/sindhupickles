@@ -47,6 +47,8 @@ const stamp = Date.now();
 const aliceEmail = `zz.alice.${stamp}@example.com`;
 const malloryEmail = `zz.mallory.${stamp}@example.com`;
 const counterBefore = (await one("SELECT value FROM counters WHERE name='order_number'")).value;
+// Test orders get invoices; their numbers are given back at the end (the invoices go with the orders).
+const invoiceCounterBefore = (await one("SELECT value FROM counters WHERE name='invoice_number'"))?.value ?? null;
 const couponBefore = (await one("SELECT used_count FROM coupons WHERE code='SINDHU05'")).used_count;
 const created = { product: null, orders: [], customers: [], enquiry: false };
 // The shop owner may have saved Settings with COD off; the checkout tests need it on, so the row is restored at the end.
@@ -261,6 +263,11 @@ try {
   await db.query("DELETE FROM newsletter_subscribers WHERE email LIKE ?", [`zz.news%.${stamp}@example.com`]);
   if (created.enquiry) await db.query("DELETE FROM enquiries WHERE email LIKE ?", [`zz.enq.${stamp}@example.com`]);
   await db.query("UPDATE counters SET value = ? WHERE name='order_number'", [counterBefore]);
+  // Never below an invoice that still exists (e.g. ones the Orders page issued for real orders meanwhile).
+  await db.query(
+    "INSERT INTO counters (name, value) SELECT 'invoice_number', GREATEST(?, COALESCE(MAX(CAST(SUBSTRING_INDEX(invoice_number, '-', -1) AS UNSIGNED)), 0)) FROM invoices ON DUPLICATE KEY UPDATE value = VALUES(value)",
+    [invoiceCounterBefore ?? 0],
+  );
   await db.query("UPDATE coupons SET used_count = ? WHERE code='SINDHU05'", [couponBefore]);
   const left = (await one("SELECT (SELECT COUNT(*) FROM customers WHERE email LIKE 'zz.%') c, (SELECT COUNT(*) FROM products WHERE sku LIKE 'ZZ-ST-%') p, (SELECT COUNT(*) FROM orders WHERE customer_id IN (SELECT id FROM customers WHERE email LIKE 'zz.%')) o"));
   console.log(`cleanup: leftover customers=${left.c} products=${left.p} orders=${left.o}; counter restored to ${counterBefore}, coupon used_count restored to ${couponBefore}`);

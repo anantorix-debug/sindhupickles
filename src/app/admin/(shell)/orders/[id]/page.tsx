@@ -6,6 +6,9 @@ import { DetailCard } from "@/components/admin/common/detail-list";
 import { OrderStatusBadge, PaymentStatusBadge } from "@/components/admin/badges/status-badge";
 import { UpdateOrderStatusDialog } from "@/components/admin/dialogs/update-order-status";
 import { OrderTrackingDialog } from "@/components/admin/dialogs/order-tracking";
+import { FileText } from "lucide-react";
+import { DownloadInvoiceButton } from "@/components/invoice/download-invoice-button";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { methodLabel } from "@/config/labels";
 import { formatCurrency, formatDateTime } from "@/lib/format";
@@ -19,6 +22,8 @@ export async function generateMetadata({ params }: PageProps<"/admin/orders/[id]
 export default async function OrderDetailPage({ params }: PageProps<"/admin/orders/[id]">) {
   const order = await getOrder((await params).id);
   if (!order) notFound();
+  // Unpaid / failed online checkouts aren't placed orders, so they have no invoice.
+  const placed = order.status !== "pending_payment" && order.status !== "payment_failed";
 
   const totals: [string, string, boolean?][] = [
     ["Subtotal", formatCurrency(order.subtotal)],
@@ -36,6 +41,16 @@ export default async function OrderDetailPage({ params }: PageProps<"/admin/orde
         backLabel="Orders"
         actions={
           <>
+            {placed && (
+              <>
+                <Button asChild variant="secondary">
+                  <Link href={`/admin/orders/${order.id}/invoice`}>
+                    <FileText className="size-4" aria-hidden /> View invoice
+                  </Link>
+                </Button>
+                <DownloadInvoiceButton url={`/api/orders/${order.id}/invoice/download`} label="Invoice PDF" />
+              </>
+            )}
             <OrderTrackingDialog orderId={order.id} orderNumber={order.orderNumber} tracking={order.tracking} disabled={order.status === "cancelled"} />
             <UpdateOrderStatusDialog orderId={order.id} orderNumber={order.orderNumber} status={order.status} />
           </>

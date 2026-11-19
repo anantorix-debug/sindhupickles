@@ -29,8 +29,16 @@ const one = async (sql, p = []) => (await db.query(`USE ${DB}`), (await db.query
 let server = null;
 
 function build(env) {
-  const r = spawnSync("npm", ["run", "build"], { env, encoding: "utf8", shell: true, maxBuffer: 64 * 1024 * 1024 });
-  return { ok: r.status === 0, log: `${r.stdout}\n${r.stderr}` };
+  const once = () => spawnSync("npm", ["run", "build"], { env, encoding: "utf8", shell: true, maxBuffer: 64 * 1024 * 1024 });
+  let r = once();
+  let log = `${r.stdout}\n${r.stderr}`;
+  // The Next.js CLI sometimes stops once just to print an upgrade notice; running it again continues normally.
+  // Both logs are kept: the database setup already ran in the first attempt.
+  if (r.status !== 0 && /stopped to show the upgrade recommendation/.test(log)) {
+    r = once();
+    log += `\n${r.stdout}\n${r.stderr}`;
+  }
+  return { ok: r.status === 0, log };
 }
 async function start(env) {
   server = spawn("npx", ["next", "start", "-p", String(PORT)], { env, shell: true, stdio: ["ignore", "pipe", "pipe"] });
@@ -65,7 +73,7 @@ try {
   check("first build succeeds", b1.ok, b1.ok ? "" : b1.log.slice(-600));
   check("build log: tables created by the build", /\[migrate\] applied 000_base_schema\.sql/.test(b1.log));
   check("build log: first admin created (one-time)", /first admin created/.test(b1.log));
-  check("database has all 30 tables + ledger, exactly 1 user, nothing else seeded", (await one("SELECT COUNT(*) n FROM information_schema.tables WHERE table_schema = ?", [DB])).n === 31 && (await one("SELECT COUNT(*) n FROM users")).n === 1 && (await one("SELECT COUNT(*) n FROM categories")).n === 0 && (await one("SELECT COUNT(*) n FROM coupons")).n === 0);
+  check("database has all 31 tables + ledger, exactly 1 user, nothing else seeded", (await one("SELECT COUNT(*) n FROM information_schema.tables WHERE table_schema = ?", [DB])).n === 32 && (await one("SELECT COUNT(*) n FROM users")).n === 1 && (await one("SELECT COUNT(*) n FROM categories")).n === 0 && (await one("SELECT COUNT(*) n FROM coupons")).n === 0);
 
   const getLog1 = await start(deployEnv(ADMIN.password));
   check("app start-up: database already up to date (nothing to do)", /database already up to date/.test(getLog1()));
@@ -92,7 +100,12 @@ try {
   check("customer registers and saves an address", reg.status === 201 && addr.status === 201);
   const o1 = await shop.call("POST", "/api/store/checkout", { items: [{ variantId, quantity: 1 }], addressId: addr.json.data.id, paymentMethod: "cod", couponCode: "SINDHU05" });
   check("first order uses the welcome coupon (created on first use) and is ANX-1001", o1.status === 201 && o1.json.data.orderNumber === "ANX-1001", JSON.stringify(o1.json?.data ?? o1.json?.error));
-  const row1 = await one("SELECT subtotal_paise, discount_paise, total_paise FROM orders WHERE order_number = 'ANX-1001'");
+  const row1 = await one("SELECT id, subtotal_paise, discount_paise, total_paise FROM orders WHERE order_number = 'ANX-1001'");
+  check("first order issued the first invoice (INV-00001)", (await one("SELECT invoice_number n FROM invoices WHERE order_id = ?", [row1.id]))?.n === "INV-00001");
+  const pdfRes = await fetch(`${BASE}/api/orders/${row1.id}/invoice/download`, { headers: { Cookie: admin.cookie } });
+  const pdfBuf = Buffer.from(await pdfRes.arrayBuffer());
+  check("production build: owner downloads the invoice PDF (fonts + logo found)", pdfRes.status === 200 && pdfRes.headers.get("content-type") === "application/pdf" && pdfBuf.subarray(0, 5).toString() === "%PDF-" && pdfBuf.length > 20000, `status ${pdfRes.status}, ${pdfBuf.length} bytes`);
+  check("production build: customer downloads their own invoice", (await fetch(`${BASE}/api/store/orders/${row1.id}/invoice`, { headers: { Cookie: shop.cookie } })).status === 200);
   check("welcome discount is 5% of ₹200 = ₹10", row1.subtotal_paise === 20000 && row1.discount_paise === 1000);
   check("coupon row now exists, used once", (await one("SELECT used_count FROM coupons WHERE code='SINDHU05'")).used_count === 1);
   const again = await shop.call("POST", "/api/store/checkout", { items: [{ variantId, quantity: 1 }], addressId: addr.json.data.id, paymentMethod: "cod", couponCode: "SINDHU05" });
@@ -138,6 +151,7 @@ try {
   check("after redeploys: neither the initial nor any later settings password works (nothing re-seeded)", logins.every((r) => r.status === 401));
   const o3 = await shop.call("POST", "/api/store/checkout", { items: [{ variantId, quantity: 1 }], addressId: addr.json.data.id, paymentMethod: "cod" });
   check("customer session survives redeploys; order numbering continues (ANX-1003)", o3.status === 201 && o3.json.data.orderNumber === "ANX-1003", JSON.stringify(o3.json?.data ?? o3.json?.error));
+  check("after redeploys: invoice numbering continues (INV-00003), earlier invoices kept", (await one("SELECT invoice_number n FROM invoices WHERE order_id = ?", [o3.json?.data?.orderId]))?.n === "INV-00003" && (await one("SELECT COUNT(*) n FROM invoices")).n === 3);
 } catch (err) {
   failed++;
   console.log("FAIL  unexpected error:", err.message.slice(0, 800));

@@ -84,6 +84,8 @@ export interface OrderSummary {
   paymentStatus: PaymentStatus;
   paymentMethod: PaymentMethod;
   placedAt: string;
+  /** Null until the order is placed (or, for older orders, until its invoice is first issued). */
+  invoiceNumber: string | null;
 }
 
 export interface OrderItem {
@@ -224,6 +226,8 @@ export interface StoreSettings {
   supportEmail: string;
   supportPhone: string;
   address: string;
+  /** Printed on invoices when set. Optional. */
+  gstin: string;
   currency: string;
   freeShippingThreshold: number;
   shippingFee: number;
@@ -239,6 +243,53 @@ export interface StoreSettings {
   instagramUrl: string;
   facebookUrl: string;
   youtubeUrl: string;
+}
+
+export interface InvoiceParty {
+  name: string;
+  phone: string;
+  email: string;
+  addressLines: string[];
+}
+
+export interface InvoiceLine {
+  name: string;
+  variantLabel: string;
+  sku: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
+/** One invoice per placed order; everything except the payment fields is frozen when it is issued. */
+export interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  orderId: string;
+  orderNumber: string;
+  invoiceDate: string;
+  orderDate: string;
+  orderStatus: OrderStatus;
+  paymentStatus: PaymentStatus;
+  paymentMethod: PaymentMethod | null;
+  /** e.g. "Online payment (Razorpay) · UPI" */
+  paymentMethodLabel: string;
+  business: { name: string; addressLines: string[]; phone: string; email: string; gstin: string; website: string };
+  billTo: InvoiceParty;
+  shipTo: InvoiceParty;
+  /** Checkout takes one address, so billing and shipping are the same. */
+  sameAddress: boolean;
+  items: InvoiceLine[];
+  subtotal: number;
+  discount: number;
+  couponCode: string | null;
+  shipping: number;
+  tax: number;
+  total: number;
+  amountPaid: number;
+  refunded: number;
+  balanceDue: number;
+  createdAt: string;
 }
 
 export interface AdminUser {

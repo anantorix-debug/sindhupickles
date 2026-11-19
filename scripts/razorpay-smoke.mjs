@@ -75,6 +75,8 @@ admin.cookie = testAdmin.cookie;
 
 const stamp = Date.now();
 const counterBefore = (await one("SELECT value FROM counters WHERE name='order_number'")).value;
+// Test orders get invoices; their numbers are given back at the end (the invoices go with the orders).
+const invoiceCounterBefore = (await one("SELECT value FROM counters WHERE name='invoice_number'"))?.value ?? null;
 const created = { product: null, customers: [], orders: [], events: [] };
 const sign = (orderId, paymentId) => createHmac("sha256", KEY_SECRET).update(`${orderId}|${paymentId}`).digest("hex");
 const webhook = async (event, payload, { eventId = `zz-evt-${stamp}-${++seq}`, secret = WEBHOOK_SECRET, tamper = false } = {}) => {
@@ -126,6 +128,10 @@ try {
   const listed = async (c, path) => ((await c.call("GET", path)).json?.data ?? []).some((o) => String(o.id) === String(id1));
   check("unpaid draft is NOT in the customer's orders", !(await listed(alice, "/api/store/orders")));
   check("unpaid draft is NOT in Admin's order list", !(await listed(admin, "/api/orders")));
+  const invoiceCount = async (id) => (await one("SELECT COUNT(*) n FROM invoices WHERE order_id=?", [id])).n;
+  check("unpaid online order has NO invoice", (await invoiceCount(id1)) === 0);
+  check("admin invoice for an unpaid order refused (409), nothing created", (await admin.call("POST", `/api/orders/${id1}/invoice`)).status === 409 && (await invoiceCount(id1)) === 0);
+  check("customer invoice for an unpaid order refused (409)", (await alice.call("GET", `/api/store/orders/${id1}/invoice`)).status === 409);
 
   const start = await alice.call("POST", "/api/store/payments/razorpay/order", { orderId: id1, amount: 1, amountPaise: 1 });
   check("start payment returns key id + server-computed amount ", start.status === 200 && start.json.data.amountPaise === (await orderRow(id1)).total_paise && start.json.data.keyId === "rzp_test_mockkey", JSON.stringify({ a: start.json?.data?.amountPaise }));
@@ -160,6 +166,8 @@ try {
   check("order CONFIRMED + payment CAPTURED + signature recorded", (await orderRow(id1)).status === "CONFIRMED" && (await payRow(id1)).status === "CAPTURED" && (await payRow(id1)).signature_verified === 1 && (await payRow(id1)).provider_payment_id === pay1);
   const ok2 = await v({});
   check("duplicate verify is idempotent (no second PAID event)", ok2.status === 200 && (await eventCount(id1, "PAID")) === 1 && (await eventCount(id1, "CONFIRMED")) === 1);
+  const inv1 = await one("SELECT * FROM invoices WHERE order_id=?", [id1]);
+  check("captured payment issued exactly one invoice (paid in full)", (await invoiceCount(id1)) === 1 && inv1.payment_status === "CAPTURED" && inv1.amount_paid_paise === (await orderRow(id1)).total_paise && inv1.balance_due_paise === 0);
 
   // ---------- webhooks ----------
   const wBadSig = await webhook("payment.captured", entity({ id: pay1, order_id: rzOrder, amount: 1, currency: "INR", status: "captured" }), { secret: "wrong-secret" });
@@ -181,6 +189,7 @@ try {
   const total2 = (await orderRow(id2)).total_paise;
   await webhook("payment.failed", entity({ id: `pay_ZZ${stamp}f2`, order_id: rz2, amount: total2, currency: "INR", status: "failed", error_code: "BAD_REQUEST_ERROR", error_description: "Card declined" }));
   check("failed payment event marks order PAYMENT_FAILED", (await orderRow(id2)).status === "PAYMENT_FAILED" && (await payRow(id2)).failure_code === "BAD_REQUEST_ERROR");
+  check("failed payment produced NO invoice", (await invoiceCount(id2)) === 0 && (await admin.call("GET", `/api/orders/${id2}/invoice/download`)).status === 409 && (await invoiceCount(id2)) === 0);
   await alice.call("POST", "/api/store/payments/razorpay/order", { orderId: id2 });
   check("retry puts the order back to awaiting payment (same razorpay order)", (await orderRow(id2)).status === "PENDING_PAYMENT" && (await payRow(id2)).provider_order_id === rz2);
   await webhook("payment.captured", entity({ id: `pay_ZZ${stamp}ok2`, order_id: rz2, amount: total2, currency: "INR", status: "captured" }));
@@ -245,6 +254,11 @@ try {
     await db.query("DELETE FROM customers WHERE id=?", [id]);
   }
   await db.query("UPDATE counters SET value = ? WHERE name='order_number'", [counterBefore]);
+  // Never below an invoice that still exists (e.g. ones the Orders page issued for real orders meanwhile).
+  await db.query(
+    "INSERT INTO counters (name, value) SELECT 'invoice_number', GREATEST(?, COALESCE(MAX(CAST(SUBSTRING_INDEX(invoice_number, '-', -1) AS UNSIGNED)), 0)) FROM invoices ON DUPLICATE KEY UPDATE value = VALUES(value)",
+    [invoiceCounterBefore ?? 0],
+  );
   await testAdmin.cleanup();
   const left = await one("SELECT (SELECT COUNT(*) FROM customers WHERE email LIKE 'zz.rzp.%') c, (SELECT COUNT(*) FROM products WHERE sku LIKE 'ZZ-RZP-%') p, (SELECT COUNT(*) FROM webhook_events WHERE event_id LIKE 'zz-evt-%') w");
   console.log(`cleanup: leftover customers=${left.c} products=${left.p} webhook rows=${left.w}`);

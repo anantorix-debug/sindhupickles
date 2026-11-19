@@ -27,13 +27,14 @@ try {
   // ---------- 1. brand-new empty database
   await fresh();
   const r1 = await run();
-  check("empty database: base schema applied", r1.applied.join(",") === "000_base_schema.sql" && r1.alreadyApplied === 0, r1.applied.join(","));
-  check("all 30 tables + the migration ledger exist", (await tables()) === 31);
+  const ALL = migrations.map((m) => m.name).sort().join(",");
+  check("empty database: every migration applied, in order", r1.applied.join(",") === ALL && r1.alreadyApplied === 0, r1.applied.join(","));
+  check("all 31 tables + the migration ledger exist", (await tables()) === 32);
   check("no starter data is inserted (categories, coupons, counters, users all empty)", [(await one("SELECT COUNT(*) n FROM categories")).n, (await one("SELECT COUNT(*) n FROM coupons")).n, (await one("SELECT COUNT(*) n FROM counters")).n, (await one("SELECT COUNT(*) n FROM users")).n].every((n) => n === 0));
 
   // ---------- 2. running again is a no-op
   const r2 = await run();
-  check("second run applies nothing", r2.applied.length === 0 && r2.alreadyApplied === 1);
+  check("second run applies nothing", r2.applied.length === 0 && r2.alreadyApplied === migrations.length);
 
   // ---------- 3. a LIVE database that already has data (set up by hand, no ledger): nothing is touched
   await root.query("INSERT INTO counters (name, value) VALUES ('order_number', 1500)");
@@ -43,7 +44,7 @@ try {
   await root.query("INSERT INTO users (email, password_hash, name, role) VALUES ('boss@example.com', 'owner-chosen-hash', 'Boss', 'OWNER')");
   await root.query("DROP TABLE schema_migrations"); // simulates a database created before the ledger existed
   const r3 = await run();
-  check("legacy database: base schema re-run safely", r3.applied.length === 1);
+  check("legacy database (no ledger, changes already there): all migrations re-run safely", r3.applied.join(",") === ALL, r3.applied.join(","));
   check("order counter, coupon, category, customer and admin all untouched", Number((await one("SELECT value FROM counters WHERE name='order_number'")).value) === 1500 && Number((await one("SELECT value FROM coupons WHERE code='SINDHU05'")).value) === 10 && (await one("SELECT COUNT(*) n FROM categories")).n === 1 && (await one("SELECT COUNT(*) n FROM customers")).n === 1 && (await adminHash("boss@example.com")) === "owner-chosen-hash");
 
   // ---------- 4. a future migration: new table + new column, applied once, existing data untouched
@@ -53,7 +54,7 @@ try {
   ];
   const r4 = await run({}, future);
   check("new migration applied once", r4.applied.join(",") === "001_add_wishlist.sql");
-  check("new table and column exist", (await tables()) === 32 && (await root.query("SHOW COLUMNS FROM customers LIKE 'nickname'"))[0].length === 1);
+  check("new table and column exist", (await tables()) === 33 && (await root.query("SHOW COLUMNS FROM customers LIKE 'nickname'"))[0].length === 1);
   check("existing customer and admin untouched by it", (await one("SELECT name FROM customers WHERE email='real@example.com'")).name === "Real Customer" && (await adminHash("boss@example.com")) === "owner-chosen-hash");
   check("rerunning it is a no-op", (await run({}, future)).applied.length === 0);
 
@@ -85,17 +86,27 @@ try {
   check("SQL error: reported with the file name", sqlErr?.kind === "sql" && sqlErr.migration === "003_typo.sql");
   check("SQL error: not recorded, will be retried", (await one("SELECT COUNT(*) n FROM schema_migrations WHERE name='003_typo.sql'")).n === 0);
 
+  // ---------- 6b. a migration interrupted half-way (first change made, second not) completes on the next deploy
+  const half = { name: "004_two_columns.sql", sql: "ALTER TABLE customers ADD COLUMN zz_one INT NULL;\nALTER TABLE customers ADD COLUMN zz_two VARCHAR(20) NOT NULL DEFAULT 'a;b';" };
+  await root.query("ALTER TABLE customers ADD COLUMN zz_one INT NULL"); // the part that ran before the deploy was cut off
+  const r6b = await run({}, [...future, half]);
+  check("interrupted migration: finishes on the next deploy (existing column skipped, missing one added)", r6b.applied.includes("004_two_columns.sql") && (await root.query("SHOW COLUMNS FROM customers LIKE 'zz_two'"))[0][0]?.Default === "a;b");
+  check("interrupted migration: customer data untouched", (await one("SELECT name FROM customers WHERE email='real@example.com'")).name === "Real Customer");
+  let other = null;
+  try { await run({}, [...future, half, { name: "005_dup_then_typo.sql", sql: "ALTER TABLE customers ADD COLUMN zz_one INT NULL;\nCREATE TABEL nope (a INT);" }]); } catch (e) { other = e; }
+  check("a real SQL error after an already-there one still stops the deploy", other?.kind === "sql" && other.migration === "005_dup_then_typo.sql");
+
   // ---------- 7. a migration file edited after it was applied is noticed but not re-run
   const edited = migrations.map((m) => ({ ...m, sql: m.sql + "\n-- edited" }));
   const r7 = await run({}, edited);
-  check("edited-after-applied is flagged, not re-run", r7.changedAfterApplied.join(",") === "000_base_schema.sql" && r7.applied.length === 0);
+  check("edited-after-applied is flagged, not re-run", r7.changedAfterApplied.join(",") === ALL && r7.applied.length === 0);
 
   // ---------- 8. several deploys/servers at the same moment
   await fresh();
   const results = await Promise.allSettled(Array.from({ length: 5 }, () => run()));
   check("5 simultaneous runs: none crashed", results.every((x) => x.status === "fulfilled"), results.filter((x) => x.status === "rejected").map((x) => x.reason?.message).join(" | "));
   const appliedBy = results.filter((x) => x.status === "fulfilled" && x.value.applied.length).length;
-  check("5 simultaneous runs: the schema was applied exactly once", appliedBy === 1 && (await tables()) === 31);
+  check("5 simultaneous runs: the schema was applied exactly once", appliedBy === 1 && (await tables()) === 32);
 
   // ---------- 9. first admin: seeded ONCE, then never touched by any later deploy
   await fresh();

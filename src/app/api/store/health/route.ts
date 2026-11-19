@@ -6,7 +6,7 @@ import { UPLOADS_PERSISTENT, UPLOADS_ROOT } from "@/server/uploads";
 export const dynamic = "force-dynamic";
 
 /** Tables in db/schema.sql. */
-const EXPECTED_TABLES = 30;
+const EXPECTED_TABLES = 31; // 30 base tables + invoices (002)
 
 /**
  * Deployment check: open /api/store/health in a browser. It answers the first questions when a fresh server

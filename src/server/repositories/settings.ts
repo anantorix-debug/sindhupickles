@@ -10,6 +10,7 @@ const DEFAULTS: StoreSettings = {
   supportEmail: "sindhuspickles8@gmail.com",
   supportPhone: "+91 88380 83381",
   address: "1-1/154 Indhra Nagar, Mohan Nagar Post, Salem - 636030, Tamil Nadu, India",
+  gstin: "",
   currency: "INR",
   freeShippingThreshold: 999,
   shippingFee: 60,

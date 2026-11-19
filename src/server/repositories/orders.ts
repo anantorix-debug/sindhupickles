@@ -13,7 +13,8 @@ const lower = <T extends string>(v: string | null): T => String(v ?? "").toLower
 const SUMMARY_SQL = `
   SELECT o.id, o.order_number, o.customer_id, o.status, o.payment_status, o.payment_method, o.total_paise, o.placed_at,
          c.name AS customer_name, c.email AS customer_email,
-         (SELECT COALESCE(SUM(oi.quantity), 0) FROM order_items oi WHERE oi.order_id = o.id) AS item_count
+         (SELECT COALESCE(SUM(oi.quantity), 0) FROM order_items oi WHERE oi.order_id = o.id) AS item_count,
+         (SELECT i.invoice_number FROM invoices i WHERE i.order_id = o.id) AS invoice_number
   FROM orders o JOIN customers c ON c.id = o.customer_id`;
 
 function mapSummary(r: Row): OrderSummary {
@@ -29,6 +30,7 @@ function mapSummary(r: Row): OrderSummary {
     paymentStatus: lower<PaymentStatus>(r.payment_status),
     paymentMethod: lower<PaymentMethod>(r.payment_method),
     placedAt: iso(r.placed_at)!,
+    invoiceNumber: r.invoice_number ?? null,
   };
 }
 

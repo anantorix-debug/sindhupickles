@@ -83,6 +83,38 @@ async function seedAdmin(conn, env, log) {
   return outcome;
 }
 
+/** "Already there" errors: table exists (1050), duplicate column (1060), duplicate index name (1061). */
+const ALREADY_THERE = new Set([1050, 1060, 1061]);
+
+/**
+ * Runs one migration file. MySQL can't roll back table changes, so a deploy interrupted half-way through a file (or a
+ * database that already has the change) would otherwise fail on every later deploy with "Duplicate column" and the like.
+ * In that case the file is re-run statement by statement, skipping only the statements whose table/column/index is
+ * already there. Any other error still stops the deploy.
+ */
+async function applySql(conn, m, log) {
+  try {
+    await conn.query(m.sql);
+    return;
+  } catch (err) {
+    if (!ALREADY_THERE.has(err.errno)) throw err;
+  }
+  // Only whole-line "--" comments are removed; strings and MySQL's /*!...*/ version comments are kept as written.
+  const statements = m.sql
+    .replace(/^\s*--[^\n]*$/gm, "")
+    .split(/;\s*(?:\r?\n|$)/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  for (const stmt of statements) {
+    try {
+      await conn.query(stmt);
+    } catch (err) {
+      if (!ALREADY_THERE.has(err.errno)) throw err;
+      log.info(`[migrate] ${m.name}: already there, skipped: ${stmt.slice(0, 80).replace(/\s+/g, " ")}…`);
+    }
+  }
+}
+
 /**
  * @param {{ migrations: {name: string, sql: string}[], env?: Record<string,string|undefined>, log?: Pick<Console,"info"|"warn">, lockWaitSeconds?: number }} opts
  * @returns {Promise<{ skipped?: string, applied: string[], alreadyApplied: number, changedAfterApplied: string[], admin: string | null }>}
@@ -135,7 +167,7 @@ export async function runMigrations({ migrations, env = process.env, log = conso
         throw Object.assign(new Error(`migration ${m.name} refused: ${reason}. Migrations may only ADD things. Rename it to include ".allow-data-change." if you really mean it.`), { kind: "unsafe", migration: m.name });
       }
       try {
-        await conn.query(m.sql);
+        await applySql(conn, m, log);
       } catch (err) {
         throw Object.assign(new Error(`migration ${m.name} failed: ${err.message}`), { kind: "sql", migration: m.name, code: err.code });
       }

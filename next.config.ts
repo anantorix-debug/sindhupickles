@@ -25,6 +25,10 @@ const nextConfig: NextConfig = {
   // Dev mode only: lets the site be opened through a Cloudflare quick tunnel (needed to test Razorpay webhooks locally).
   allowedDevOrigins: ["*.trycloudflare.com"],
   poweredByHeader: false,
+  // Invoice PDFs: pdfkit runs as a plain Node package (not bundled), and its font + logo files are copied into the
+  // server build (incl. Hostinger's standalone output) for the API routes that render invoices.
+  serverExternalPackages: ["pdfkit"],
+  outputFileTracingIncludes: { "/api/**/*": ["./src/server/invoices/assets/**/*"] },
   // Safe, widely supported hardening headers. (No Content-Security-Policy yet: it must be tuned for Razorpay Checkout first.)
   async headers() {
     return [

@@ -2,6 +2,7 @@ import "server-only";
 import type { PoolConnection } from "mysql2/promise";
 import { revalidatePath } from "next/cache";
 import { ApiError, notFound } from "@/server/http";
+import { issueInvoiceSafely } from "@/server/invoices/service";
 import { sendOrderConfirmation } from "@/server/store/notifications";
 import { query, transaction, type Row } from "@/server/db";
 import {
@@ -126,6 +127,7 @@ export async function applyCapture(p: { razorpayOrderId: string; paymentId: stri
       await conn.query("UPDATE orders SET status = 'CONFIRMED', payment_status = 'CAPTURED', confirmed_at = COALESCE(confirmed_at, NOW(3)), updated_at = NOW(3) WHERE id = ?", [order.id]);
       await logEvent(conn, order.id, "PAID", order.status, `Payment received (${p.source}).`);
       await logEvent(conn, order.id, "CONFIRMED", "PAID", "Order confirmed and queued for the next fresh batch.");
+      await issueInvoiceSafely(conn, order.id);
       return "confirmed";
     }
     // Already further along (e.g. processing/shipped): just make sure the payment status is right.

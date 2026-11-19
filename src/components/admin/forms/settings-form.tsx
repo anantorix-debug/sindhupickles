@@ -47,6 +47,9 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
           <FormField label="Support phone" htmlFor="supportPhone" required error={errors.supportPhone?.message}>
             <Input {...fieldA11y("supportPhone", errors.supportPhone?.message)} type="tel" autoComplete="tel" {...register("supportPhone")} />
           </FormField>
+          <FormField label="GSTIN" htmlFor="gstin" error={errors.gstin?.message} hint="Printed on invoices. Leave empty if the shop is not GST registered.">
+            <Input {...fieldA11y("gstin", errors.gstin?.message, true)} className="uppercase" maxLength={15} autoComplete="off" {...register("gstin")} />
+          </FormField>
           <FormField label="Address" htmlFor="address" required error={errors.address?.message} className="sm:col-span-2">
             <Textarea {...fieldA11y("address", errors.address?.message)} rows={3} {...register("address")} />
           </FormField>

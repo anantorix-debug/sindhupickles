@@ -5,6 +5,7 @@ import { ApiError } from "@/server/http";
 import { transaction, type Row } from "@/server/db";
 import { insertAddress } from "@/server/store/addresses";
 import { getPaymentProvider } from "@/server/store/payments/providers";
+import { issueInvoiceSafely } from "@/server/invoices/service";
 import { sendOrderConfirmation } from "@/server/store/notifications";
 import { CartIssuesError, resolveCart, toPricedCart, type Querier } from "@/server/store/pricing";
 
@@ -128,6 +129,9 @@ export async function placeOrder(customerId: string, input: CheckoutInput): Prom
       `UPDATE orders SET status = ?, payment_status = ?${outcome.orderStatus === "CONFIRMED" ? ", confirmed_at = NOW(3)" : ""}, updated_at = NOW(3) WHERE id = ?`,
       [outcome.orderStatus, outcome.paymentStatus, orderId],
     );
+    // Placed straight away (cash on delivery / test payment): issue its invoice in this same transaction.
+    // Online orders get theirs when the payment is captured.
+    if (outcome.orderStatus !== "PENDING_PAYMENT") await issueInvoiceSafely(conn, orderId);
 
     return {
       orderId: String(orderId),

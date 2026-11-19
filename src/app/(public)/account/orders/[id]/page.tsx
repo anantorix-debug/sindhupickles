@@ -5,6 +5,7 @@ import { CheckCircle2, ExternalLink } from "lucide-react";
 import { trackingPageUrl } from "@/lib/couriers";
 import { Card } from "@/components/ui/card";
 import { OrderStatusBadge, PaymentStatusBadge } from "@/components/ui/status-badge";
+import { DownloadInvoiceButton } from "@/components/invoice/download-invoice-button";
 import { OrderTracker } from "@/components/store/account/order-tracker";
 import { PayNow } from "@/components/store/account/pay-now";
 import { StoreProviders } from "@/components/store/providers";
@@ -23,6 +24,9 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
   const sp = await searchParams;
   const justPlaced = sp.placed === "1";
   const payState = Array.isArray(sp.payment) ? sp.payment[0] : sp.payment;
+  // An invoice exists once the order is placed (cash on delivery straight away, online once paid).
+  const placed = order.status !== "pending_payment" && order.status !== "payment_failed";
+  const invoiceUrl = `/api/store/orders/${order.id}/invoice`;
   const needsPayment = order.paymentMethod === "razorpay" && (order.status === "pending_payment" || order.status === "payment_failed") && order.paymentStatus !== "captured";
 
   return (
@@ -33,6 +37,7 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
           <div>
             <h2 className="font-display text-xl font-bold">Thank you! Your order is placed.</h2>
             <p className="mt-1 text-sm text-muted">Your order number is <strong className="text-foreground">{order.orderNumber}</strong>. We&apos;ll keep this page updated as it moves along.</p>
+            {placed && <DownloadInvoiceButton url={invoiceUrl} className="mt-3" size="sm" />}
           </div>
         </div>
       )}
@@ -56,7 +61,10 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
           <h2 className="font-display text-2xl font-black">{order.orderNumber}</h2>
           <p className="text-sm text-muted">Placed on {formatDateTime(order.placedAt)}</p>
         </div>
-        <div className="flex gap-2"><OrderStatusBadge status={order.status} /><PaymentStatusBadge status={order.paymentStatus} /></div>
+        <div className="flex flex-col items-end gap-3">
+          <div className="flex gap-2"><OrderStatusBadge status={order.status} /><PaymentStatusBadge status={order.paymentStatus} /></div>
+          {placed && !justPlaced && <DownloadInvoiceButton url={invoiceUrl} size="sm" />}
+        </div>
       </div>
 
       <Card className="p-5 sm:p-6"><OrderTracker status={order.status} />
