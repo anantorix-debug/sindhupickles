@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { orderStatusMeta, paymentStatusMeta } from "@/config/labels";
+import { compactAddress } from "@/lib/invoice-format";
 import type { Invoice } from "@/types";
 
 const inr = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -35,7 +36,7 @@ export function InvoicePaper({ invoice: inv }: { invoice: Invoice }) {
         <address className="not-italic sm:w-[40%]">
           <p className="font-bold text-gray-900">From</p>
           <p>{inv.business.name}</p>
-          {inv.business.addressLines.map((l) => <p key={l}>{l}</p>)}
+          {compactAddress(inv.business.addressLines).map((l) => <p key={l}>{l}</p>)}
           <p>{inv.business.phone}</p>
           <p className="break-all">{inv.business.email}</p>
           {inv.business.gstin && <p>GSTIN: {inv.business.gstin}</p>}
@@ -46,22 +47,21 @@ export function InvoicePaper({ invoice: inv }: { invoice: Invoice }) {
         <div className="sm:w-1/2">
           <p className="font-bold text-gray-900">Bill to</p>
           <p>{inv.billTo.name}</p>
-          {inv.billTo.addressLines.map((l, i) => <p key={i}>{l}</p>)}
-          <p className="break-all">{inv.billTo.email}</p>
-          <p>{inv.billTo.phone}</p>
+          {compactAddress(inv.billTo.addressLines).map((l, i) => <p key={i}>{l}</p>)}
+          <p className="break-words">{[inv.billTo.phone, inv.billTo.email].filter(Boolean).join(" · ")}</p>
           <p className="mt-3 font-bold text-gray-900">Ship to</p>
           {inv.sameAddress && inv.shipTo.name === inv.billTo.name ? (
             <p className="text-gray-500">Same as billing address</p>
           ) : (
             <>
               <p>{inv.shipTo.name}</p>
-              {inv.shipTo.addressLines.map((l, i) => <p key={i}>{l}</p>)}
+              {compactAddress(inv.shipTo.addressLines).map((l, i) => <p key={i}>{l}</p>)}
               <p>{inv.shipTo.phone}</p>
             </>
           )}
         </div>
         <dl className="space-y-0.5 sm:w-[40%]">
-          <div className="mb-1 text-xl text-gray-900">
+          <div className="mb-1 text-[15px] text-gray-900">
             <dt className="inline font-bold">Invoice no: </dt>
             <dd className="inline">{inv.invoiceNumber}</dd>
           </div>
@@ -124,9 +124,10 @@ export function InvoicePaper({ invoice: inv }: { invoice: Invoice }) {
         <p className="text-sm font-bold text-gray-900">Thank you for shopping with {inv.business.name}!</p>
         <p>Questions about this order? Call {inv.business.phone} or email {inv.business.email}.</p>
         {inv.business.website && (
-          <p>
-            Shipping, return &amp; refund policy: {inv.business.website}/policies/shipping-return-refund · Terms: {inv.business.website}/policies/terms
-          </p>
+          <>
+            <p>Shipping, return &amp; refund policy: {inv.business.website}/policies/shipping-return-refund</p>
+            <p>Terms &amp; conditions: {inv.business.website}/policies/terms</p>
+          </>
         )}
         <p>This is a computer-generated invoice and does not need a signature.</p>
       </footer>

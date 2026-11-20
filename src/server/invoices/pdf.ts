@@ -4,6 +4,7 @@ import { join } from "node:path";
 import PDFDocument from "pdfkit";
 import type { Invoice } from "@/types";
 import { orderStatusMeta, paymentStatusMeta } from "@/config/labels";
+import { compactAddress } from "@/lib/invoice-format";
 
 /**
  * A4 portrait invoice, laid out like the shop's sample invoice: title + logo and the shop's address on top, then
@@ -92,7 +93,7 @@ export async function renderInvoicePdf(inv: Invoice): Promise<Buffer> {
 
   let y = PAGE.m;
   y = text("From", rightX, y, { bold: true, size: 9.5 });
-  const fromLines = [inv.business.name, ...inv.business.addressLines, inv.business.phone, inv.business.email, ...(inv.business.gstin ? [`GSTIN: ${inv.business.gstin}`] : [])];
+  const fromLines = [inv.business.name, ...compactAddress(inv.business.addressLines), inv.business.phone, inv.business.email, ...(inv.business.gstin ? [`GSTIN: ${inv.business.gstin}`] : [])];
   for (const l of fromLines) y = text(l, rightX, y + 1, { width: rightW, color: "#374151" });
   y = Math.max(y, leftY) + 22;
 
@@ -100,15 +101,16 @@ export async function renderInvoicePdf(inv: Invoice): Promise<Buffer> {
   const billTop = y;
   let by = text("Bill to", PAGE.m, billTop, { bold: true });
   const leftW = CONTENT_W * 0.5;
-  for (const l of [inv.billTo.name, ...inv.billTo.addressLines, inv.billTo.email, inv.billTo.phone].filter(Boolean)) by = text(l, PAGE.m, by + 1, { width: leftW, color: "#374151" });
+  const contact = [inv.billTo.phone, inv.billTo.email].filter(Boolean).join("  ·  ");
+  for (const l of [inv.billTo.name, ...compactAddress(inv.billTo.addressLines), contact].filter(Boolean)) by = text(l, PAGE.m, by + 1, { width: leftW, color: "#374151" });
   by += 8;
   by = text("Ship to", PAGE.m, by, { bold: true });
   if (inv.sameAddress && inv.shipTo.name === inv.billTo.name) by = text("Same as billing address", PAGE.m, by + 1, { width: leftW, color: MUTED });
-  else for (const l of [inv.shipTo.name, ...inv.shipTo.addressLines, inv.shipTo.phone].filter(Boolean)) by = text(l, PAGE.m, by + 1, { width: leftW, color: "#374151" });
+  else for (const l of [inv.shipTo.name, ...compactAddress(inv.shipTo.addressLines), inv.shipTo.phone].filter(Boolean)) by = text(l, PAGE.m, by + 1, { width: leftW, color: "#374151" });
 
   let ry = billTop;
-  doc.font("bold").fontSize(15).fillColor(INK).text("Invoice no:  ", rightX, ry, { continued: true });
-  doc.font("regular").fontSize(15).text(inv.invoiceNumber);
+  doc.font("bold").fontSize(11).fillColor(INK).text("Invoice no: ", rightX, ry, { continued: true });
+  doc.font("regular").fontSize(11).text(inv.invoiceNumber);
   ry = doc.y + 3;
   const details: [string, string][] = [
     ["Order no:", inv.orderNumber],
@@ -183,7 +185,7 @@ export async function renderInvoicePdf(inv: Invoice): Promise<Buffer> {
   const footer = [
     `Thank you for shopping with ${inv.business.name}!`,
     `Questions about this order? Call ${inv.business.phone} or email ${inv.business.email}.`,
-    ...(site ? [`Shipping, return & refund policy: ${site}/policies/shipping-return-refund  ·  Terms: ${site}/policies/terms`] : []),
+    ...(site ? [`Shipping, return & refund policy: ${site}/policies/shipping-return-refund`, `Terms & conditions: ${site}/policies/terms`] : []),
     "This is a computer-generated invoice and does not need a signature.",
   ];
   const footerH = footer.reduce((h, l, i) => h + heightOf(l, CONTENT_W, i === 0 ? 11 : 8.5, i === 0) + 3, 0) + 20;
